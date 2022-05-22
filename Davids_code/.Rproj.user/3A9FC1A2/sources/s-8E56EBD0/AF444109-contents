@@ -1,0 +1,110 @@
+###############################################################################
+## Project: ccbp
+## Date: what date is it?
+## Author: David JP O'Sullivan
+###############################################################################
+rm(list = ls()) # tidy work space
+gc()
+
+# libraries, source files and data ---------------------------------------------
+
+# load in packages and codde 
+source('./code/_code.R')
+library(tidyverse) # load required packages
+
+
+# bp simulations ----------------------------------------------------------
+
+
+prob_ex_pois <- function(k, lambda)((k + 1)/ lambda) * dpois(k + 1, lambda)
+# create the excess degree distrubion for a poi random var (we actually dont need
+# this)
+
+dpois(0:10, 9) %>% round(2) # see what the prob dist looks like
+
+# create a function to sample n iid from the excess dist
+rex_pois <- function(n, lambda) sample(x = 0:100, n, replace = T, prob = prob_ex_pois(0:100, lambda))
+
+# create a function for the offspring distrubtion that gives the number of 
+# of infections if we have  rpois(n, lambda) links 
+g1 <- function(n, lambda, p) rbinom(1, rpois(n, lambda), p)
+g <- function(n, lambda, p) rbinom(1, rex_pois(n, lambda), p)
+
+
+# g1 <- function(n, lambda, p) rbinom(1, 6, p)
+# g <- function(n, lambda, p) rbinom(1, 5, p)
+
+# function to simulate a simple branching processes
+r_bp_sim <- function(max_g = 10^5, lambda = 6, p = 0.05){
+  # max_g is the max number of generation we can simulate for
+  # lambda the expected degree if a node, 
+  # p is the probability of infection
+  
+  # setup simulation, where we are going to save the results
+  # and the number of nodes that we start with
+  sim_results <- tibble(n_gen = 0:max_g, n_s = NA)
+  n_gen <- 0; new_s <- 1;
+  
+  # do the simulation
+  sim_results$n_s[n_gen + 1] <- new_s
+  repeat{
+    if(new_s == 0 | n_gen == max_g) break
+    
+    if(n_gen == 0){
+      new_s <- g1(new_s, lambda, p) %>% sum
+    } else {
+      new_s <- g(new_s, lambda, p) %>% sum
+    }
+    
+    # save the results
+    n_gen <- n_gen + 1
+    sim_results$n_s[n_gen + 1] <- new_s
+  }
+  
+  sim_results <- sim_results %>% # take the results
+    filter(complete.cases(.)) %>% # remove any NA's
+    mutate(t_s = sum(n_s)) %>% # calculate the cascade size
+    slice(1:(n()-1)) # retrain all bar the last row of the matrix
+  
+  return(sim_results) # return the cascades
+}
+
+# check what happen when I run the sim
+r_bp_sim()
+
+igraph::erdos.renyi.game(1000, 0.1)
+
+sim_res <- # run simulations multiple times
+  tibble(
+    sim = 1:5000, # how many simulation do we want to run
+    sim_res = list(NULL) # create a list for the results to be stored
+    ) %>% 
+  group_by(sim) %>% # for each sim id
+  mutate(sim_res = list(r_bp_sim())) %>% # run the simulation and store 
+  unnest(sim_res) %>% # take the list and turn into a matrix
+  slice(n()) %>% # retrain the last row of each sim
+  ungroup() # remove the grouping by sim
+
+sim_res %>% # take the sim results
+  # count the number of times we have a cascade of size t_s to find the distrubtion
+  count(t_s) %>% 
+  mutate(p = n/sum(n)) %>% # convert the counts into probabilities
+  ggplot(aes(x = t_s, y = p)) + # create a plot where the x is cascade size, and y = prob
+  geom_point() + # plot point
+  geom_line() + # add lines
+  scale_y_log10() # scale the y by log 
+
+# what is the mean cascades and sd for cascade size. 
+sim_res %>% 
+  summarise(
+    mean(t_s), 
+    sd(t_s)
+    )
+
+
+
+
+# clean up work space ----------------------------------------------------------
+
+rm(list = ls()) # tidy work space
+gc()

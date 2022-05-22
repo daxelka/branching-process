@@ -1,0 +1,9 @@
+
+
+library(Rcpp)
+Rcpp::sourceCpp(file = 'test_c.cpp')
+
+factorial(10)
+
+
+
