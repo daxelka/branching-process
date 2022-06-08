@@ -63,9 +63,15 @@ mean(data_path[10,])
 sum(offspring_dist*n_offspring)^9
 
 # check extinction probability
-data$extinct[data_path[2,]==0]
+mean(data$extinct)
+mean(data$extinct[data_path[2,]==0])
+mean(data$extinct[data_path[2,]==1])
+mean(data$extinct[data_path[2,]==2])
+mean(data$extinct[data_path[2,]==3])
+mean(data$extinct[data_path[2,]==4])
 
-
+mean(data$extinct[data_path[5,]==12])
+sum(data_path[5,]==12)
 
 # see which generation lives the longest
 data[which.max(data$generations),]

@@ -8,8 +8,6 @@ random.seed(0)
 n_trials = 1000
 n_generations = 30
 
-# sample(x, size, replace = FALSE, prob = NULL)
-
 # create offspring distribution
 n_offspring = np.array(range(5))
 offspring_dist = np.array([0.35, 0.35, 0.1, 0.15, 0.05])
@@ -22,9 +20,6 @@ df = pd.DataFrame({'n_trial': list(range(1, n_trials)),
 # create data to store simulation path
 data_path = np.zeros((n_generations, n_trials))
 data_path[0, :] = 1
-
-# data_path <- matrix(data=0, nrow=n_generations, ncol=n_trials)
-# data_path[1,] <- 1
 
 # simulate branching process
 for i in range(0, n_trials):
@@ -62,11 +57,11 @@ print(np.mean(df['extinct']))
 
 # visualise
 # Histogram
-# plt.hist(df['generations'])
-# plt.xlabel('generations')
-# plt.title('Branching process')
-# plt.show()
-# path
-plt.plot(data_path)
-plt.ylim(0, 100)
+plt.hist(df['generations'])
+plt.xlabel('generations')
+plt.title('Branching process')
 plt.show()
+# # path
+# plt.plot(data_path)
+# plt.ylim(0, 100)
+# plt.show()
