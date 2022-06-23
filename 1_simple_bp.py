@@ -7,14 +7,16 @@ import matplotlib.pyplot as plt
 rng = np.random.default_rng()
 
 
-def branching(n_infections=1, max_generation=10, lambda_param=6, probability_success=0.5):
+def branching(n_infections=1, max_generation=100, lambda_param=6, probability_success=0.05):
     generation = 0
     results = pd.DataFrame({'generation': list(range(max_generation)),
                             'new_infections': 0})
-
+    # initial seed size for zero generation
+    results['new_infections'][0] = 1
     # get children for the first generation
     offsprings = np.sum(infection_distribution(n_infections, lambda_param, probability_success))
     # save the results of the first generation
+    generation = 1
     results['new_infections'][generation] = offsprings
     # simulate the following simulations
     while generation < (max_generation-1) and offsprings != 0:
@@ -22,6 +24,7 @@ def branching(n_infections=1, max_generation=10, lambda_param=6, probability_suc
         generation += 1
         # sim_results['new_infections'][generation] = offsprings
         results.loc[generation, 'new_infections'] = offsprings  # may be a faster way
+        n_infections = offsprings
 
     # cut off the results at the first generation with  zero offsprings
     if offsprings == 0:
@@ -85,16 +88,16 @@ def run(n_simulations):
     return sim_results
 
 # run simulations
-n_simulations = 100
+n_simulations = 5000
 sim_results = run(n_simulations)
 
 # to count the total frequencies for each values of total_infections
 infections_frequencies = sim_results.total_infections.value_counts()/n_simulations
 frequencies_sorted = infections_frequencies.sort_values()
 # print(total_infections_frequencies)
-print(infections_frequencies.sort_values())
 print(frequencies_sorted)
 
-plt.scatter(frequencies_sorted.index, frequencies_sorted.values)
+# plt.scatter(frequencies_sorted.index, frequencies_sorted.values)
+plt.plot(list(frequencies_sorted.index), list(frequencies_sorted.values))
 # plt.yscale('log')
 plt.show()
