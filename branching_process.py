@@ -13,10 +13,14 @@ class BranchingProcess:
         self.probability_success = probability_success
 
     def branching(self):
+        """
+        :return: DataFrame with the number of generation and the number
+                 of new offsprings produced at that generation until zero offsprings produced
+        """
         results = pd.DataFrame({'generation': list(range(self.max_generation)),
                                 'new_infections': 0})
         # initial seed size for zero generation
-        results['new_infections'][0] = 1
+        results['new_infections'][0] = self.initial_seed
         population = self.initial_seed
         # get children for the first generation
         offsprings = np.sum(self.infection_distribution(population,
@@ -31,8 +35,8 @@ class BranchingProcess:
                                                                    self.lambda_param,
                                                                    self.probability_success))
             generation += 1
-            results['new_infections'][generation] = offsprings
-            # results.loc[generation, 'new_infections'] = offsprings  # may be a faster way
+            # results['new_infections'][generation] = offsprings
+            results.loc[generation, 'new_infections'] = offsprings  # may be a faster way
             population = offsprings
 
         # cut off the results at the first generation with  zero offsprings
@@ -69,9 +73,12 @@ class BranchingProcess:
             excess_probability = [(k + 1) / mean * self.poisson_probability(k + 1, mean) for k in actual]
         elif type(actual) is int:
             excess_probability = (actual + 1) / mean * self.poisson_probability(actual + 1, mean)
+        else:
+            raise ValueError('first parameter is neither list nor integer')
         return excess_probability
 
-    def poisson_probability(self, actual, mean):
+    @staticmethod
+    def poisson_probability(actual, mean):
         # naive:   math.exp(-mean) * mean**actual / factorial(actual)
         # iterative, to keep the components from getting too large or small:
         p = math.exp(-mean)
@@ -81,6 +88,10 @@ class BranchingProcess:
         return p
 
     def run(self, n_simulations):
+        """
+        :param n_simulations: number of times to run the branching process
+        :return: DataFrame with the # of simulation, total infections, and the last generation
+        """
         sim_results = pd.DataFrame({'simulation': list(range(n_simulations)),
                                     'generation': 0,
                                     'total_infections': 0})

@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import math
+import time
 import matplotlib.pyplot as plt
 from branching_process import BranchingProcess
 
@@ -17,7 +18,9 @@ n_simulations = 5000
 bp = BranchingProcess(initial_seed, max_generation, lambda_param, probability_success)
 
 # run branching process n_simulation types
+t1 = time.time()
 sim_results = bp.run(n_simulations)
+print('elapsed time:', time.time() - t1)
 
 # to count the total frequencies for each values of total_infections
 infections_frequencies = sim_results.total_infections.value_counts()/n_simulations
