@@ -8,7 +8,7 @@ class BranchingProcessMultiType:
     def __init__(self, seed1=1, seed2=0,
                  lambda_in=6, lambda_out=6,
                  probability_in=0.05, probability_out=0.5):
-        self.max_generation = int(1e01)
+        self.max_generation = int(1e02)
         self.rng = np.random.default_rng()
         self.seed_1 = seed1
         self.seed_2 = seed2
@@ -104,17 +104,21 @@ class BranchingProcessMultiType:
             p /= i + 1
         return p
 
-    # def run(self, n_simulations):
-    #     """
-    #     :param n_simulations: number of times to run the branching process
-    #     :return: DataFrame with the # of simulation, total infections, and the last generation
-    #     """
-    #     sim_results = pd.DataFrame({'simulation': list(range(n_simulations)),
-    #                                 'generation': 0,
-    #                                 'total_infections': 0})
-    #
-    #     for simulation in range(n_simulations):
-    #         results = self.branching()
-    #         sim_results.loc[simulation, 'generation'] = results['generation'].iloc[-1]
-    #         sim_results.loc[simulation, 'total_infections'] = results['total_infections'].iloc[-1]
-    #     return sim_results
+    def run(self, n_simulations):
+        """
+        :param n_simulations: number of times to run the branching process
+        :return: DataFrame with the # of simulation, total infections, and the last generation
+        """
+        sim_results = pd.DataFrame({'simulation': list(range(n_simulations)),
+                                    'generation': 0,
+                                    'total_infections_1': 0,
+                                    'total_infections_2': 0,
+                                    'total_infections': 0})
+
+        for simulation in range(n_simulations):
+            results = self.branching()
+            sim_results.loc[simulation, 'generation'] = results['generation'].iloc[-1]
+            sim_results.loc[simulation, 'total_infections_1'] = results['total_infections_1'].iloc[-1]
+            sim_results.loc[simulation, 'total_infections_2'] = results['total_infections_2'].iloc[-1]
+            sim_results.loc[simulation, 'total_infections'] = results['total_infections'].iloc[-1]
+        return sim_results
