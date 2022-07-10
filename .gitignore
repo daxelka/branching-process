@@ -31,3 +31,4 @@ __pycache__/
 # images
 img/
 data/
+.Rproj.user

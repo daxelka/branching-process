@@ -96,7 +96,7 @@ r_mtbp_sim <- function(max_g = 5000, lambda_in = 6, lambda_out = 6,
 
 sim_res <- # run the above code by:
   tibble(
-    sim = 1:5000, # setting up the number of monte carlo simulations 
+    sim = 1:50, # setting up the number of monte carlo simulations 
     sim_res = list(NULL) # and a list to store the resutls of each sim
     ) %>%
   group_by(sim) %>% # for each sim id

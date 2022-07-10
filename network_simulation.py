@@ -25,15 +25,16 @@ g = nx.stochastic_block_model(sizes, probs, seed=0)
 prob_infection = 0.05
 max_generation = 10
 # initial seed from block 0 always
-nodes_block0 = [x for x,y in g.nodes(data=True) if y['block']==0]
-seed = random.sample(nodes_block0, 1)
-print('seed node:', seed)
-active_nodes = seed
-rng = np.random.default_rng()
-results_dic = {'0': [seed]}
-generation = 0
+
 
 for i in range(100):
+    nodes_block0 = [x for x, y in g.nodes(data=True) if y['block'] == 0]
+    seed = random.sample(nodes_block0, 1)
+    print('seed node:', seed)
+    active_nodes = seed
+    rng = np.random.default_rng()
+    results_dic = {'0': [seed]}
+    generation = 0
     while active_nodes and generation <= max_generation:
         results = []
         for active_node in active_nodes:

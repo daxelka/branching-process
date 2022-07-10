@@ -87,8 +87,9 @@ def run(n_simulations):
         sim_results.loc[simulation, 'total_infections'] = results['total_infections'].iloc[-1]
     return sim_results
 
+
 # run simulations
-n_simulations = 5000
+n_simulations = 500
 sim_results = run(n_simulations)
 
 # to count the total frequencies for each values of total_infections
