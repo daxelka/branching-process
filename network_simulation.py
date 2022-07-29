@@ -11,8 +11,16 @@ p_out = 4/1000
 sizes = [500, 500]
 probs = [[p_in, p_out], [p_out, p_in]]
 
-g = nx.stochastic_block_model(sizes, probs, seed=0)
-nodes_block0 = [x for x, y in g.nodes(data=True) if y['block'] == 0]
+G = nx.stochastic_block_model(sizes, probs, seed=0)
+edges = G.edges()
+nodes = G.nodes(data=True)
+# # create a new attribute 'active'
+# opinions_dict = dict(enumerate([True]*len(G)))
+# nx.set_node_attributes(G, opinions_dict, 'active')
+
+# list of nodes in block0
+nodes_block0 = [x for x, y in G.nodes(data=True) if y['block'] == 0]
+
 
 # # preparing for drawing
 # color_map = ['yellow' if g.nodes[node]['block'] == 0 else 'pink' for node in g.nodes()]
@@ -29,7 +37,9 @@ max_generation = 10
 
 simulations = {}
 
-for i in range(5):
+for i in range(100):
+    g_copy = nx.create_empty_copy(G, with_data=True)
+    g_copy.add_edges_from(edges)
     seed = random.sample(nodes_block0, 1)
     active_nodes = seed
     rng = np.random.default_rng()
@@ -39,7 +49,7 @@ for i in range(5):
         results = {}
         for active_node in active_nodes:
             # take IDs of all nodes that are connected by a edge which received a possitive outcome in Bernoulli trials
-            neighbours = list(g.neighbors(active_node))
+            neighbours = list(g_copy.neighbors(active_node))
             if neighbours:
                 infections = rng.binomial(1, prob_infection, (1, len(neighbours)))
                 infections_np = np.array(infections[0])
@@ -50,7 +60,8 @@ for i in range(5):
                 results['n_active'] = len(active_nodes)
                 results['average_n_offspring'] = np.sum(infections)/len(active_nodes)
             # remove current active node
-            g.remove_node(active_node)
+            g_copy.remove_node(active_node)
+            # G.nodes(active_node)['active'] = 'False'
 
         results_dic[str(generation)] = results
         active_nodes = infected_nodes
