@@ -42,8 +42,8 @@ print(frequencies_1)
 print(frequencies_2)
 print(frequencies)
 
-# plt.plot(list(frequencies.index), list(frequencies.values))
-plt.plot(list(frequencies_1.index), list(frequencies_1.values))
+plt.scatter(list(frequencies.index), list(frequencies.values))
+# plt.plot(list(frequencies_1.index), list(frequencies_1.values))
 # plt.plot(list(frequencies_2.index), list(frequencies_2.values))
 plt.show()
 
