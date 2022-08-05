@@ -44,7 +44,7 @@ class BranchingProcess:
         self.prob_infection = prob_infection
         self.nodes_block0 = [x for x, y in self.G.nodes(data=True) if y['block'] == 0]
         # internal parameters
-        self.max_generation = 100
+        self.max_generation = 5
 
     def run(self):
         G_copy = nx.create_empty_copy(self.G, with_data=True)
@@ -56,23 +56,34 @@ class BranchingProcess:
         generation = 0
         while active_nodes and generation <= self.max_generation:
             results = {}
+            infected_nodes_total = []
+            # print('active nodes', active_nodes)
             for active_node in active_nodes:
+                # print('active node', active_node)
                 # take IDs of all nodes that are connected by a edge which received a possitive outcome in Bernoulli trials
                 neighbours = list(G_copy.neighbors(active_node))
+                # eligible neighbours
+                neighbours_eligible = list(set(neighbours).difference(active_nodes))
+                neighbours_eligible_np = np.array(neighbours_eligible)
                 if neighbours:
-                    infections = rng.binomial(1, self.prob_infection, (1, len(neighbours)))
+                    infections = rng.binomial(1, self.prob_infection, (1, len(neighbours_eligible)))
                     infections_np = np.array(infections[0])
-                    neighbours_np = np.array(neighbours)
-                    infected_nodes = list(neighbours_np[infections_np > 0])
-                    results['active_nodes'] = active_nodes
-                    results['offspring'] = infected_nodes
-                    results['n_active'] = len(active_nodes)
-                    results['average_n_offspring'] = np.sum(infections) / len(active_nodes)
+                    infected_nodes = list(neighbours_eligible_np[infections_np > 0])
+                    # print('infected_nodes for active node', infected_nodes)
+                    infected_nodes_total = infected_nodes_total + infected_nodes
+
                 # remove current active node
                 G_copy.remove_node(active_node)
 
+            # recording results
+            results['active_nodes'] = active_nodes
+            results['offspring'] = list(set(infected_nodes_total))
+            results['n_active'] = len(active_nodes)
+            results['average_n_offspring'] = len(set(infected_nodes_total)) / len(active_nodes)
             results_dic[str(generation)] = results
-            active_nodes = infected_nodes
+            # print('results_dic', results_dic[str(generation)])
+            active_nodes = list(set(infected_nodes_total))
+            # print('active nodes for next generation', active_nodes)
             generation += 1
         return results_dic
 

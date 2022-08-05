@@ -9,8 +9,12 @@ from bp_class import get_average_number_offspring
 # Network based simulation
 p_in, p_out = 4.5/1000, 2/1000
 sizes = [1000, 1000]
-prob_infection = 0.025
-n_sim = 300
+prob_infection = 0.05
+n_sim = 500
+# p_in, p_out = 4/10, 2/10
+# prob_infection = 0.5
+# sizes = [10,10]
+# n_sim = 1
 
 bp = BranchingProcess(p_in, p_out, sizes, prob_infection)
 
@@ -24,10 +28,10 @@ vals, prob = np.unique(max_generation, return_counts=True)
 # branching process parameters
 seed_1, seed_2 = 1, 0
 lambda_in, lambda_out = 4.5, 2
-probability_in, probability_out = 0.025, 0.025
+probability_in, probability_out = 0.05, 0.05
 
 # simulation parameters
-n_simulations = 300
+n_simulations = 500
 
 # initiate branching process
 bp = BranchingProcessMultiType(seed_1, seed_2,
