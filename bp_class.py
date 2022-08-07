@@ -77,7 +77,7 @@ class BranchingProcess:
 
             # recording results
             results['active_nodes'] = active_nodes
-            results['offspring'] = list(set(infected_nodes_total))
+            results['offspring'] = list(set(infected_nodes_total))  # remove dublicates
             results['n_active'] = len(active_nodes)
             results['average_n_offspring'] = len(set(infected_nodes_total)) / len(active_nodes)
             results_dic[str(generation)] = results
