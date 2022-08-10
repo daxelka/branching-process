@@ -8,7 +8,7 @@ class BranchingProcessMultiType:
     def __init__(self, seed1=1, seed2=0,
                  lambda_in=6, lambda_out=6,
                  probability_in=0.05, probability_out=0.5):
-        self.max_generation = int(1e02)
+        self.max_generation = int(100)
         self.rng = np.random.default_rng()
         self.seed_1 = seed1
         self.seed_2 = seed2

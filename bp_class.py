@@ -44,7 +44,7 @@ class BranchingProcess:
         self.prob_infection = prob_infection
         self.nodes_block0 = [x for x, y in self.G.nodes(data=True) if y['block'] == 0]
         # internal parameters
-        self.max_generation = 5
+        self.max_generation = 100
 
     def run(self):
         G_copy = nx.create_empty_copy(self.G, with_data=True)
