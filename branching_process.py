@@ -5,7 +5,7 @@ import math
 
 class BranchingProcess:
 
-    def __init__(self, initial_seed=1, max_generation=100, lambda_param=6, probability_success=0.05):
+    def __init__(self, initial_seed=1, max_generation=50, lambda_param=6, probability_success=0.05):
         self.rng = np.random.default_rng()
         self.initial_seed = initial_seed
         self.max_generation = max_generation

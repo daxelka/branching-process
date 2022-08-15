@@ -13,10 +13,10 @@ lambda_in, lambda_out = 9, 4   # Poisson lambda parameters
 prob_infection = 0.1
 
 # Simulation parameters
-n_simulations = 100
+n_simulations = 300
 
 # Network based simulation
-community_size = 1000  # number of nodes in each communities
+community_size = 500  # number of nodes in each communities
 p_in, p_out = lambda_in/community_size, lambda_out/community_size
 
 bp = BranchingProcess(p_in, p_out, [community_size, community_size], prob_infection)
