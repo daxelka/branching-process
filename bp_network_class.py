@@ -14,8 +14,6 @@ def get_average_number_offspring(results):
     for sim in range(len(results)):
         results_i = results[str(sim)]
         for gen in range(len(results_i)):
-            # print(results_i[str(gen)])
-            # print('gen', gen, 'results', results_i[str(gen)]['average_n_offspring'])
             if str(gen) in offspring.keys():
                 offspring[str(gen)].append(results_i[str(gen)]['average_n_offspring'])
             else:
@@ -28,13 +26,28 @@ def get_average_number_offspring(results):
         average_n_offspring[gen_str] = sum(offspring[gen_str]) / len(offspring[gen_str])
     return average_n_offspring
 
+
+def get_total_infections(results):
+    total_infections_multy_runs = {}
+    for sim in range(len(results)):
+        results_i = results[str(sim)]
+        total_infections = []
+        for gen in range(len(results_i)):
+            # print(len(results_i[str(gen)]['active_nodes']))
+            total_infections.append(len(results_i[str(gen)]['active_nodes']))
+        total_infections_multy_runs[str(sim)] = np.cumsum(total_infections)
+
+    return total_infections_multy_runs
+
+
+
 #     print('number of active nodes', len(my_dic[str(i)]['active_nodes']))
 #     print('number of offspring', sum([len(k) for k in my_dic[str(i)]['offspring']]))
 #     print('average number of offspring per node',
 #           sum([len(k) for k in my_dic[str(i)]['offspring']])/len(my_dic[str(i)]['active_nodes']))
 
 
-class BranchingProcess:
+class BranchingProcessNetwork:
 
     def __init__(self, p_in=9/1000, p_out=4/1000, sizes=[500, 500], prob_infection=0.05):
         # setting branching process parameters
@@ -45,13 +58,15 @@ class BranchingProcess:
         self.nodes_block0 = [x for x, y in self.G.nodes(data=True) if y['block'] == 0]
         # internal parameters
         self.max_generation = 100
+        self.rng = np.random.default_rng()
 
     def run(self):
+        # make a copy of the network for this simulation
         G_copy = nx.create_empty_copy(self.G, with_data=True)
         G_copy.add_edges_from(self.edges)
+        # pick a seed node from block0
         seed = random.sample(self.nodes_block0, 1)
         active_nodes = seed
-        rng = np.random.default_rng()
         results_dic = {'0': {}}
         generation = 0
         while active_nodes and generation <= self.max_generation:
@@ -62,14 +77,14 @@ class BranchingProcess:
                 # print('active node', active_node)
                 # take IDs of all nodes that are connected by a edge which received a possitive outcome in Bernoulli trials
                 neighbours = list(G_copy.neighbors(active_node))
-                # eligible neighbours
+                # exclude active nodes from list of neighbours
                 neighbours_eligible = list(set(neighbours).difference(active_nodes))
                 neighbours_eligible_np = np.array(neighbours_eligible)
                 if neighbours:
-                    infections = rng.binomial(1, self.prob_infection, (1, len(neighbours_eligible)))
+                    infections = self.rng.binomial(1, self.prob_infection, (1, len(neighbours_eligible)))
                     infections_np = np.array(infections[0])
                     infected_nodes = list(neighbours_eligible_np[infections_np > 0])
-                    # print('infected_nodes for active node', infected_nodes)
+                    # record all infections for this generation (with possibility of a node being infected twice)
                     infected_nodes_total = infected_nodes_total + infected_nodes
 
                 # remove current active node

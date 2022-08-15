@@ -3,7 +3,7 @@ import numpy as np
 import math
 import time
 import matplotlib.pyplot as plt
-from multitype_branching_process import BranchingProcessMultiType
+from bp_mt_class import BranchingProcessMultiType
 
 # branching process parameters
 seed_1, seed_2 = 1, 0

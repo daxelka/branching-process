@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from bp_class import BranchingProcess
-from bp_class import get_max_generation
-from bp_class import get_average_number_offspring
+from bp_network_class import BranchingProcess
+from bp_network_class import get_max_generation
+from bp_network_class import get_average_number_offspring
 
 # p_in = 9/10
 # p_out = 4/10

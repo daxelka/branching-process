@@ -2,10 +2,10 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import numpy as np
 import time
-from multitype_branching_process import BranchingProcessMultiType
-from bp_class import BranchingProcess
-from bp_class import get_max_generation
-from bp_class import get_average_number_offspring
+from bp_mt_class import BranchingProcessMultiType
+from bp_network_class import BranchingProcessNetwork
+from bp_network_class import get_max_generation
+from bp_network_class import get_average_number_offspring
 
 # Branching process parameters
 # Mean degree within and cross communities in network
@@ -19,10 +19,10 @@ n_simulations = 300
 community_size = 500  # number of nodes in each communities
 p_in, p_out = lambda_in/community_size, lambda_out/community_size
 
-bp = BranchingProcess(p_in, p_out, [community_size, community_size], prob_infection)
+bp_network = BranchingProcessNetwork(p_in, p_out, [community_size, community_size], prob_infection)
 
-results = bp.simulations(n_simulations)
-max_generation = get_max_generation(results)
+results_network = bp_network.simulations(n_simulations)
+max_generation = get_max_generation(results_network)
 
 # lifetime distribution
 vals, prob = np.unique(max_generation, return_counts=True)
@@ -30,22 +30,21 @@ vals, prob = np.unique(max_generation, return_counts=True)
 # BP simulation
 # branching process parameters
 seed_1, seed_2 = 1, 0
-probability_in, probability_out = prob_infection, prob_infection
 
 # initiate branching process
 bp = BranchingProcessMultiType(seed_1, seed_2,
                                lambda_in, lambda_out,
-                               probability_in, probability_out)
+                               prob_infection, prob_infection)
 
 # run branching process n_simulation types
 t_start = time.time()
-sim_results = bp.run(n_simulations)
+results_bp = bp.run(n_simulations)
 print('elapsed time:', time.time() - t_start)
 
 # to count the total frequencies for each values of total_infections
 # frequencies = sim_results.total_infections.value_counts()/n_simulations
 # frequencies = frequencies.sort_values()
-max_generation_bp = sim_results.generation.value_counts()/n_simulations
+max_generation_bp = results_bp.generation.value_counts()/n_simulations
 max_generation_bp = max_generation_bp.sort_values()
 print(max_generation_bp)
 
