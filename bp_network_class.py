@@ -27,18 +27,43 @@ def get_average_number_offspring(results):
     return average_n_offspring
 
 
-def get_total_infections(results):
-    total_infections_multy_runs = {}
+def get_total_infections(results, community_size, block='total'):
+    total_infections_multi_runs = {}
     for sim in range(len(results)):
         results_i = results[str(sim)]
         total_infections = []
+        # infections_block0 = []
+        # infections_block1 = []
+
         for gen in range(len(results_i)):
-            # print(len(results_i[str(gen)]['active_nodes']))
-            total_infections.append(len(results_i[str(gen)]['active_nodes']))
-        total_infections_multy_runs[str(sim)] = np.cumsum(total_infections)
+            # take list of active nodes in the generation
+            active_total = np.array(results_i[str(gen)]['active_nodes'])
 
-    return total_infections_multy_runs
+            if block == 'total':
+                total_infections.append(len(active_total))
+            elif block == 'block0':
+                active_bloc0 = active_total[active_total < community_size]
+                total_infections.append(len(active_bloc0))
+            elif block == 'block1':
+                active_bloc1 = active_total[active_total >= community_size]
+                total_infections.append(len(active_bloc1))
+            # If an exact match is not confirmed
+            else:
+                raise ValueError('unknown value for parameter block')
 
+            # active_bloc0 = active_total[active_total < community_size]
+            # active_bloc1 = active_total[active_total >= community_size]
+
+            # infections_block0.append(len(active_bloc0))
+            # infections_block1.append(len(active_bloc1))
+            # print(infections_block0)
+            # print(infections_block1)
+
+            # total_infections.append(len(results_i[str(gen)]['active_nodes']))
+
+        total_infections_multi_runs[str(sim)] = np.cumsum(total_infections)
+
+    return total_infections_multi_runs
 
 
 #     print('number of active nodes', len(my_dic[str(i)]['active_nodes']))
