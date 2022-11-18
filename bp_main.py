@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from bp_network_class import BranchingProcess
+from bp_network_class import BranchingProcessNetwork
 from bp_network_class import get_max_generation
 from bp_network_class import get_average_number_offspring
 
@@ -16,7 +16,7 @@ sizes = [500, 500]
 prob_infection = 0.05
 n_sim = 100
 
-bp = BranchingProcess(p_in, p_out, sizes, prob_infection)
+bp = BranchingProcessNetwork(p_in, p_out, sizes, prob_infection)
 
 results = bp.simulations(n_sim)
 print(results)

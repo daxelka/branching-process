@@ -11,7 +11,7 @@ lambda_in, lambda_out = 3, 3
 probability_in, probability_out = 0.05, 0.05
 
 # simulation parameters
-n_simulations = 500
+n_simulations = 100
 
 # initiate branching process
 bp = BranchingProcessMultiType(seed_1, seed_2,

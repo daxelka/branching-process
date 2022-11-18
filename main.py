@@ -7,6 +7,11 @@ from bp_network_class import BranchingProcessNetwork
 from bp_network_class import get_max_generation
 from bp_network_class import get_average_number_offspring
 
+# runs a series of simulation on a multitype branching process on network and on an approximate model
+# with the same parameters
+# calculates and compares lifetime distributions of two models
+
+
 # Branching process parameters
 # Mean degree within and cross communities in network
 lambda_in, lambda_out = 9, 4   # Poisson lambda parameters
