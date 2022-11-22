@@ -3,7 +3,7 @@ import numpy as np
 import math
 import time
 import matplotlib.pyplot as plt
-from branching_process import BranchingProcess
+from simple_bp_class import BranchingProcess
 
 # branching process parameters
 initial_seed = 1

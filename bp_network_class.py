@@ -105,7 +105,7 @@ class BranchingProcessNetwork:
                 # exclude active nodes from list of neighbours
                 neighbours_eligible = list(set(neighbours).difference(active_nodes))
                 neighbours_eligible_np = np.array(neighbours_eligible)
-                if neighbours:
+                if neighbours_eligible:
                     infections = self.rng.binomial(1, self.prob_infection, (1, len(neighbours_eligible)))
                     infections_np = np.array(infections[0])
                     infected_nodes = list(neighbours_eligible_np[infections_np > 0])
