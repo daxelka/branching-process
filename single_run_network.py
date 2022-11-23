@@ -10,7 +10,7 @@ from bp_network_class import get_total_infections
 
 # Branching process parameters
 # Mean degree within and cross communities in network
-lambda_in, lambda_out = 9, 4   # Poisson lambda parameters
+lambda_in, lambda_out = 9, 0   # Poisson lambda parameters
 prob_infection = 0.1
 
 # Network based simulation
@@ -34,9 +34,12 @@ for sim in range(len(results_network)):
     plt.plot(list(range(len(infections_block1[str(sim)]))), infections_block1[str(sim)])
 plt.xlabel('generation')
 plt.ylabel('total infections')
+plt.legend(['block 0', 'block 1'], loc='upper right')
 # set axis ticks to integers only
 plt.gca().yaxis.get_major_locator().set_params(integer=True)
 plt.show()
+
+print('done')
 
 # max_generation = get_max_generation(results_network)
 #
