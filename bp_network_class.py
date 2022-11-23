@@ -9,6 +9,17 @@ def get_max_generation(data):
     return [len(data[str(j)]) - 1 for j in range(len(data))]
 
 
+def get_lifetime_distribution(data):
+    max_generation = get_max_generation(data)
+    # lifetime distribution
+    vals, frequencies = np.unique(max_generation, return_counts=True)
+    lifetime_vals = vals + 1  # counting first generation
+    lifetime_frequencies = frequencies / len(max_generation)  # normalising
+    lifetime_distribution = pd.DataFrame({'gens': list(lifetime_vals),
+                                          'probs': list(lifetime_frequencies)})
+    return lifetime_distribution
+
+
 def get_average_number_offspring(results):
     offspring = {}
     for sim in range(len(results)):
@@ -51,25 +62,9 @@ def get_total_infections(results, community_size, block='total'):
             else:
                 raise ValueError('unknown value for parameter block')
 
-            # active_bloc0 = active_total[active_total < community_size]
-            # active_bloc1 = active_total[active_total >= community_size]
-
-            # infections_block0.append(len(active_bloc0))
-            # infections_block1.append(len(active_bloc1))
-            # print(infections_block0)
-            # print(infections_block1)
-
-            # total_infections.append(len(results_i[str(gen)]['active_nodes']))
-
         total_infections_multi_runs[str(sim)] = np.cumsum(total_infections)
 
     return total_infections_multi_runs
-
-
-#     print('number of active nodes', len(my_dic[str(i)]['active_nodes']))
-#     print('number of offspring', sum([len(k) for k in my_dic[str(i)]['offspring']]))
-#     print('average number of offspring per node',
-#           sum([len(k) for k in my_dic[str(i)]['offspring']])/len(my_dic[str(i)]['active_nodes']))
 
 
 class BranchingProcessNetwork:

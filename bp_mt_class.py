@@ -3,6 +3,15 @@ import numpy as np
 import math
 
 
+def get_lifetime_distribution(results):
+    # to count the total frequencies for each values of total_infections
+    max_generation_bp = results.generation.value_counts() / results.simulation.size
+    max_generation_bp = max_generation_bp.sort_values()
+    lifetime_distribution = pd.DataFrame({'gens': np.array(max_generation_bp.index),
+                                          'probs': list(max_generation_bp.values)})
+    return lifetime_distribution
+
+
 class BranchingProcessMultiType:
 
     def __init__(self, seed1=1, seed2=0,
