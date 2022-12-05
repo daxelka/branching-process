@@ -19,13 +19,13 @@ calculates and compares lifetime distributions of two models
 # Branching process parameters
 # Mean degree within and across communities in network
 lambda_in, lambda_out = 9, 4   # Poisson lambda parameters
-prob_infection = 0.07
+prob_infection = 0.1
 
 # Simulation parameters
-n_simulations = 500
+n_simulations = 1000
 
 # Network based simulation
-community_size = 500  # number of nodes in each communities
+community_size = 1000  # number of nodes in each communities
 p_in, p_out = lambda_in/community_size, lambda_out/community_size
 
 bp_network = BranchingProcessNetwork(p_in, p_out, [community_size, community_size], prob_infection)

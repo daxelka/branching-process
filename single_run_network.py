@@ -10,8 +10,8 @@ from bp_network_class import get_total_infections
 
 # Branching process parameters
 # Mean degree within and cross communities in network
-lambda_in, lambda_out = 9, 0   # Poisson lambda parameters
-prob_infection = 0.1
+lambda_in, lambda_out = 9, 4   # Poisson lambda parameters
+prob_infection = 0.05
 
 # Network based simulation
 community_size = 500  # number of nodes in each communities
