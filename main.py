@@ -22,7 +22,7 @@ lambda_in, lambda_out = 9, 4   # Poisson lambda parameters
 prob_infection = 0.05
 
 # Simulation parameters
-n_simulations = 1000
+n_simulations = 500
 
 # Network based simulation
 community_size = 500  # number of nodes in each communities

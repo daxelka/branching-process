@@ -32,7 +32,6 @@ def itt_gen(s1, s2, lambda_param=0.9, n_max=100):
         s1 = get_fx(s1, s2, lambda_param)
         s2 = get_ft(s2)
     # apply initial conditions
-    # ans = np.conj(get_initial_condition(s1, s2))
     ans = get_initial_condition(s1, s2)
     return ans
 

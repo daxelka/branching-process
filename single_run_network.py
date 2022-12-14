@@ -14,11 +14,11 @@ lambda_in, lambda_out = 9, 4   # Poisson lambda parameters
 prob_infection = 0.05
 
 # Network based simulation
-community_size = 500  # number of nodes in each communities
+community_size = 1000  # number of nodes in each communities
 p_in, p_out = lambda_in/community_size, lambda_out/community_size
 
 # number of simulations
-n_sim = 50
+n_sim = 2000
 
 bp_network = BranchingProcessNetwork(p_in, p_out, [community_size, community_size], prob_infection)
 
@@ -43,30 +43,44 @@ infections_block1 = get_total_infections(results_network, community_size, block=
 print('done')
 
 max_generation = 20
-cascades = []
-cascades_size_distribution_np = np.zeros((1,max_generation), dtype='float')
-print(cascades_size_distribution_np)
-# for i in range(len(total_infections)):
-#     cascades = cascades + [list(total_infections[str(i)]) + [0]*(max_generation - len(total_infections[str(i)]))]
 
-for i in range(len(total_infections)):
-    cascades_size_distribution_np = cascades_size_distribution_np + np.array(list(total_infections[str(i)]) + [0]*(max_generation - len(total_infections[str(i)])))
+def get_cascades_distribution_np(infections, max_generation):
+    n_sim = len(infections)
+    cascades_size_distribution_np = np.zeros((max_generation,), dtype='float')
+    for i in range(n_sim):
+        cascades_size_distribution_np = cascades_size_distribution_np + np.array(
+            list(infections[str(i)]) + [0] * (max_generation - len(infections[str(i)])))
 
-cascades_size_distribution_np = cascades_size_distribution_np/n_sim
-print(cascades_size_distribution_np)
+    return cascades_size_distribution_np / n_sim
 
-plt.plot(np.array(range(max_generation)), cascades_size_distribution_np[0])
+def get_cascades_distribution_list(infections, max_generation):
+    n_sim = len(infections)
+    cascades = []
+    for i in range(len(infections)):
+        cascades = cascades + [list(infections[str(i)]) + [0]*(max_generation - len(infections[str(i)]))]
+    return np.sum(np.array(cascades, dtype='int_'), axis=0) / n_sim
+
+t1_np = time.time()
+cascades_size_distribution_np = get_cascades_distribution_np(total_infections, max_generation)
+t2_np = time.time()
+print('elapsed time numpy array ' + str(t2_np-t1_np))
+# t1_list = time.time()
+# cascades_size_distribution_list = get_cascades_distribution_np(total_infections, max_generation)
+# t2_list = time.time()
+# print('elapsed time list ' + str(t2_list - t1_list))
+
+plt.plot(np.array(range(max_generation)), cascades_size_distribution_np)
 plt.gca().xaxis.get_major_locator().set_params(integer=True)
 plt.show()
 
-# def get_cascades_distribution_np(total_inf):
+# Cascade distribution in different communities
+cascades_block0 = get_cascades_distribution_np(infections_block0, max_generation)
+cascades_block1 = get_cascades_distribution_np(infections_block1, max_generation)
+plt.plot(np.array(range(max_generation)), cascades_block0)
+plt.plot(np.array(range(max_generation)), cascades_block1)
+plt.gca().xaxis.get_major_locator().set_params(integer=True)
+plt.show()
 
-# cascade_size_distribution = np.sum(np.array(cascades, dtype='int_'), axis=0) / n_sim
-# print(cascade_size_distribution)
-
-# plt.plot(list(range(max_generation)), cascade_size_distribution)
-# plt.gca().xaxis.get_major_locator().set_params(integer=True)
-# plt.show()
 
 # max_generation = get_max_generation(results_network)
 #
