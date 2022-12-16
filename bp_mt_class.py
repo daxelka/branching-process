@@ -3,12 +3,21 @@ import numpy as np
 import math
 
 
-def get_lifetime_distribution(results):
-    # to count the total frequencies for each values of total_infections
-    max_generation_bp = results.generation.value_counts() / results.simulation.size
-    max_generation_bp = max_generation_bp.sort_values()
-    lifetime_distribution = pd.DataFrame({'gens': np.array(max_generation_bp.index),
-                                          'probs': list(max_generation_bp.values)})
+def get_lifetime_distribution(results, extend_to=False):
+    n_sim = len(results.generation)
+    lifetime_probs = [len(results.generation[results.generation >= n])/n_sim for n in range(1,max(results.generation)+1)]
+
+    if extend_to and extend_to > max(results.generation):
+        lifetime_distribution = pd.DataFrame({'gens': list(range(1, extend_to + 1)),
+                                              'probs': lifetime_probs + [0]*(extend_to-max(results.generation))})
+    else:
+        lifetime_distribution = pd.DataFrame({'gens': list(range(1, max(results.generation)+1)),
+                                             'probs': lifetime_probs})
+    # # to count the total frequencies for each values of total_infections
+    # max_generation_bp = results.generation.value_counts() / results.simulation.size
+    # max_generation_bp = max_generation_bp.sort_values()
+    # lifetime_distribution = pd.DataFrame({'gens': np.array(max_generation_bp.index),
+    #                                       'probs': list(max_generation_bp.values)})
     return lifetime_distribution
 
 

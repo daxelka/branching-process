@@ -2,6 +2,9 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import numpy as np
 import time
+
+import pandas as pd
+
 from bp_mt_class import BranchingProcessMultiType
 from bp_network_class import BranchingProcessNetwork
 from bp_network_class import get_max_generation
@@ -18,7 +21,7 @@ community_size = 1000  # number of nodes in each communities
 p_in, p_out = lambda_in/community_size, lambda_out/community_size
 
 # number of simulations
-n_sim = 2000
+n_sim = 5
 
 bp_network = BranchingProcessNetwork(p_in, p_out, [community_size, community_size], prob_infection)
 
@@ -42,16 +45,27 @@ infections_block1 = get_total_infections(results_network, community_size, block=
 
 print('done')
 
-max_generation = 20
+max_generation = 5
 
 def get_cascades_distribution_np(infections, max_generation):
     n_sim = len(infections)
-    cascades_size_distribution_np = np.zeros((max_generation,), dtype='float')
     for i in range(n_sim):
-        cascades_size_distribution_np = cascades_size_distribution_np + np.array(
-            list(infections[str(i)]) + [0] * (max_generation - len(infections[str(i)])))
+        cascades_i = np.sum(np.array(list(infections[str(i)])),axis=0)
 
-    return cascades_size_distribution_np / n_sim
+    cascade_prob = np.array([cascades_i[cascades_i] >= n for n in range(1, max(cascades_i)+1)])/n_sim
+    cascade_vals = list(range(1, max(cascades_i)+1))
+    cascade_distribution = pd.DataFrame({'prob': cascade_prob,
+                                         'vals': cascade_vals})
+    return cascade_distribution
+
+# def get_cascades_distribution_np(infections, max_generation):
+#     n_sim = len(infections)
+#     cascades_size_distribution_np = np.zeros((max_generation,), dtype='float')
+#     for i in range(n_sim):
+#         cascades_size_distribution_np = cascades_size_distribution_np + np.array(
+#             list(infections[str(i)]) + [0] * (max_generation - len(infections[str(i)])))
+#
+#     return cascades_size_distribution_np / n_sim
 
 def get_cascades_distribution_list(infections, max_generation):
     n_sim = len(infections)
@@ -78,6 +92,7 @@ cascades_block0 = get_cascades_distribution_np(infections_block0, max_generation
 cascades_block1 = get_cascades_distribution_np(infections_block1, max_generation)
 plt.plot(np.array(range(max_generation)), cascades_block0)
 plt.plot(np.array(range(max_generation)), cascades_block1)
+# plt.title('')
 plt.gca().xaxis.get_major_locator().set_params(integer=True)
 plt.show()
 

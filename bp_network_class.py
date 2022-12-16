@@ -9,14 +9,25 @@ def get_max_generation(data):
     return [len(data[str(j)]) - 1 for j in range(len(data))]
 
 
-def get_lifetime_distribution(data):
-    max_generation = get_max_generation(data)
-    # lifetime distribution
-    vals, frequencies = np.unique(max_generation, return_counts=True)
-    lifetime_vals = vals + 1  # counting first generation
-    lifetime_frequencies = frequencies / len(max_generation)  # normalising
-    lifetime_distribution = pd.DataFrame({'gens': list(lifetime_vals),
-                                          'probs': list(lifetime_frequencies)})
+def get_lifetime_distribution(data, extend_to=False):
+    generations = np.array(get_max_generation(data))
+    max_generation = max(generations)
+    n_sim = len(generations)
+    lifetime_probs = [len(generations[generations >= n]) / n_sim for n in
+                      range(1, max(generations) + 1)]
+    if extend_to and extend_to > max_generation:
+        lifetime_distribution = pd.DataFrame({'gens': list(range(1, extend_to + 1)),
+                                              'probs': lifetime_probs + [0]*(extend_to-max_generation)})
+    else:
+        lifetime_distribution = pd.DataFrame({'gens': list(range(1, max(generations) + 1)),
+                                              'probs': lifetime_probs})
+    # max_generation = get_max_generation(data)
+    # # lifetime distribution
+    # vals, frequencies = np.unique(max_generation, return_counts=True)
+    # lifetime_vals = vals + 1  # counting first generation
+    # lifetime_frequencies = frequencies / len(max_generation)  # normalising
+    # lifetime_distribution = pd.DataFrame({'gens': list(lifetime_vals),
+    #                                       'probs': list(lifetime_frequencies)})
     return lifetime_distribution
 
 
