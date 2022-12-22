@@ -20,7 +20,7 @@ calculates and compares lifetime distributions of two models
 # Branching process parameters
 # Mean degree within and across communities in network
 lambda_in, lambda_out = 8, 2   # Poisson lambda parameters
-prob_infection = 0.02
+prob_infection = 0.05
 
 # Simulation parameters
 n_simulations = 500
@@ -60,7 +60,7 @@ plt.scatter(mt_lifetime_distribution.gens-1, mt_lifetime_distribution.probs, c='
 # network based results
 plt.scatter(lifetime_distribution_network.gens, lifetime_distribution_network.probs, c='b', label='-1')
 # Davids results
-plt.scatter(df.t[df['pin']==0.02], df.S_b[df['pin']==0.02])
+# plt.scatter(df.t[df['pin']==0.04], df.S_b[df['pin']==0.04])
 # labels
 plt.xlabel('generation', fontsize=14)
 plt.ylabel('probability', fontsize=14)

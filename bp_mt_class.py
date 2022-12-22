@@ -122,6 +122,7 @@ class BranchingProcessMultiType:
             p /= i + 1
         return p
 
+
     def run(self, n_simulations):
         """
         :param n_simulations: number of times to run the branching process
@@ -139,4 +140,12 @@ class BranchingProcessMultiType:
             sim_results.loc[simulation, 'total_infections_1'] = results['total_infections_1'].iloc[-1]
             sim_results.loc[simulation, 'total_infections_2'] = results['total_infections_2'].iloc[-1]
             sim_results.loc[simulation, 'total_infections'] = results['total_infections'].iloc[-1]
+        return sim_results
+
+    def run_v2(self, n_simulations):
+        sim_results = pd.DataFrame()
+        for simulation in range(n_simulations):
+            results = self.branching()
+            results['simulation_id'] = [simulation]*len(results.generation)
+            sim_results = pd.concat([sim_results, results])
         return sim_results
