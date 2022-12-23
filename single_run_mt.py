@@ -4,6 +4,7 @@ import math
 import time
 import matplotlib.pyplot as plt
 from bp_mt_class import BranchingProcessMultiType
+from bp_mt_class import get_hazart_function
 
 # branching process parameters
 seed_1, seed_2 = 1, 0
@@ -46,4 +47,6 @@ plt.scatter(list(frequencies.index), list(frequencies.values))
 # plt.plot(list(frequencies_1.index), list(frequencies_1.values))
 # plt.plot(list(frequencies_2.index), list(frequencies_2.values))
 plt.show()
+
+print(get_hazart_function(sim_results))
 

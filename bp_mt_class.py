@@ -3,7 +3,30 @@ import numpy as np
 import math
 
 
-def get_lifetime_distribution(results, extend_to=False):
+def get_lifetime_distribution(results):
+    # to count the total frequencies for each values of total_infections
+    max_generation_bp = results.generation.value_counts() / results.simulation.size
+    max_generation_bp = max_generation_bp.sort_values()
+    lifetime_distribution = pd.DataFrame({'gens': np.array(max_generation_bp.index),
+                                          'probs': list(max_generation_bp.values)})
+    return lifetime_distribution
+
+
+def get_hazart_function(results):
+    max_generation_counts = results.generation.value_counts().sort_values()
+    max_generation_values = np.array(max_generation_counts.index)
+    i = 3
+    # max_generation_values.index(i)
+    print(sum(max_generation_counts[max_generation_values >= i-1]))
+    print(np.where(max_generation_values == 3))
+
+    # max_generation_bp = max_generation_bp.sort_values()
+    # lifetime_distribution = pd.DataFrame({'gens': np.array(max_generation_bp.index),
+    #                                       'probs': list(max_generation_bp.values)})
+    return max_generation_counts
+
+
+def get_ccdf_cascade_distribution(results, extend_to=False):
     n_sim = len(results.generation)
     lifetime_probs = [len(results.generation[results.generation >= n])/n_sim for n in range(1,max(results.generation)+1)]
 
@@ -13,11 +36,6 @@ def get_lifetime_distribution(results, extend_to=False):
     else:
         lifetime_distribution = pd.DataFrame({'gens': list(range(1, max(results.generation)+1)),
                                              'probs': lifetime_probs})
-    # # to count the total frequencies for each values of total_infections
-    # max_generation_bp = results.generation.value_counts() / results.simulation.size
-    # max_generation_bp = max_generation_bp.sort_values()
-    # lifetime_distribution = pd.DataFrame({'gens': np.array(max_generation_bp.index),
-    #                                       'probs': list(max_generation_bp.values)})
     return lifetime_distribution
 
 

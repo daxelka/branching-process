@@ -32,7 +32,7 @@ p_in, p_out = lambda_in/community_size, lambda_out/community_size
 bp_network = BranchingProcessNetwork(p_in, p_out, [community_size, community_size], prob_infection)
 
 results_network = bp_network.simulations(n_simulations)
-lifetime_distribution_network = network_get_lifetime_distribution(results_network, extend_to=21)
+lifetime_distribution_network = network_get_lifetime_distribution(results_network)
 
 # BP simulation
 # branching process parameters
@@ -48,7 +48,8 @@ t_start = time.time()
 results_bp = bp.run(n_simulations)
 print('elapsed time:', time.time() - t_start)
 
-mt_lifetime_distribution = mt_get_lifetime_distribution(results_bp, extend_to=21)
+# mt_lifetime_distribution = mt_get_lifetime_distribution(results_bp, extend_to=21)
+mt_lifetime_distribution = mt_get_lifetime_distribution(results_bp)
 
 # comparing with Dave's results
 df = pd.read_csv('Davids_code/full_extin_dist.csv')

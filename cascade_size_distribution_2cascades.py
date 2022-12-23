@@ -33,7 +33,7 @@ prob_infection = 0.05
 # Network based simulation
 community_size = 500  # number of nodes in each communities
 # number of simulations
-n_sim = 5000
+n_sim = 500
 
 results = []
 for lambda_in, lambda_out in lambdas:
