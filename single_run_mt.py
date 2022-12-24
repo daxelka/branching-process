@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from bp_mt_class import BranchingProcessMultiType
 from bp_mt_class import get_hazart_function
 
+
 # branching process parameters
 seed_1, seed_2 = 1, 0
 lambda_in, lambda_out = 3, 3
@@ -30,7 +31,7 @@ bp = BranchingProcessMultiType(seed_1, seed_2,
 t_start = time.time()
 sim_results = bp.run(n_simulations)
 print('elapsed time:', time.time() - t_start)
-print(sim_results.iloc[1:5, 1:5])
+# print(sim_results.iloc[1:5, 1:5])
 
 # to count the total frequencies for each values of total_infections
 frequencies = sim_results.total_infections.value_counts()/n_simulations
@@ -39,14 +40,15 @@ frequencies_1 = sim_results.total_infections_1.value_counts()/n_simulations
 frequencies_1 = frequencies_1.sort_values()
 frequencies_2 = sim_results.total_infections_2.value_counts()/n_simulations
 frequencies_2 = frequencies_2.sort_values()
-print(frequencies_1)
-print(frequencies_2)
-print(frequencies)
+# print(frequencies_1)
+# print(frequencies_2)
+# print(frequencies)
 
 plt.scatter(list(frequencies.index), list(frequencies.values))
 # plt.plot(list(frequencies_1.index), list(frequencies_1.values))
 # plt.plot(list(frequencies_2.index), list(frequencies_2.values))
 plt.show()
 
-print(get_hazart_function(sim_results))
+max_generation_counts, max_generation_values, hazart_function = get_hazart_function(sim_results)
+
 

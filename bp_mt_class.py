@@ -13,17 +13,29 @@ def get_lifetime_distribution(results):
 
 
 def get_hazart_function(results):
-    max_generation_counts = results.generation.value_counts().sort_values()
-    max_generation_values = np.array(max_generation_counts.index)
-    i = 3
-    # max_generation_values.index(i)
-    print(sum(max_generation_counts[max_generation_values >= i-1]))
-    print(np.where(max_generation_values == 3))
+    max_generation_counts_and_values = results.generation.value_counts().sort_values()
+    max_generation_values = np.array(max_generation_counts_and_values.index)
+    max_generation_counts = max_generation_counts_and_values.values
+    hazart_prob = []
+    for n in range(1, max(max_generation_values)+1):
+        if n in max_generation_values.tolist():
+            print('n:' + str(n)+' sum:' + str(sum(max_generation_counts[max_generation_values >= n-1])) + 'counts:' + str(max_generation_counts[max_generation_values.tolist().index(n)]) )
+            counts_n = sum(max_generation_counts[max_generation_values >= n])
+            counts_n_1 = sum(max_generation_counts[max_generation_values >= n-1])
+            print(str(counts_n/counts_n_1))
+            # print(str(counts_n/(counts_n + max_generation_counts[max_generation_values == n-1])))
+            hazart_prob.append(1 - counts_n/counts_n_1)
+        else:
+            print('0')
+            hazart_prob.append(0)
+    hazart_function = pd.DataFrame({'gens': list(range(1, max(max_generation_values)+1)),
+                                    'probs': hazart_prob})
+    return max_generation_counts, max_generation_values, hazart_function
 
-    # max_generation_bp = max_generation_bp.sort_values()
-    # lifetime_distribution = pd.DataFrame({'gens': np.array(max_generation_bp.index),
-    #                                       'probs': list(max_generation_bp.values)})
-    return max_generation_counts
+# def get_hazart_function_v2(results):
+#     max_generation = results.generation.value_counts().sort_values()
+#
+#     return max_generation
 
 
 def get_ccdf_cascade_distribution(results, extend_to=False):
