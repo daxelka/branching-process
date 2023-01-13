@@ -9,11 +9,11 @@ from bp_mt_class import get_hazart_function
 
 # branching process parameters
 seed_1, seed_2 = 1, 0
-lambda_in, lambda_out = 3, 3
-probability_in, probability_out = 0.05, 0.05
+lambda_in, lambda_out = 8, 2
+probability_in, probability_out = 0.06, 0.06
 
 # simulation parameters
-n_simulations = 100
+n_simulations = 10
 
 # initiate branching process
 bp = BranchingProcessMultiType(seed_1, seed_2,
@@ -44,11 +44,21 @@ frequencies_2 = frequencies_2.sort_values()
 # print(frequencies_2)
 # print(frequencies)
 
-plt.scatter(list(frequencies.index), list(frequencies.values))
-# plt.plot(list(frequencies_1.index), list(frequencies_1.values))
-# plt.plot(list(frequencies_2.index), list(frequencies_2.values))
-plt.show()
+# plt.scatter(list(frequencies.index), list(frequencies.values))
+# # plt.plot(list(frequencies_1.index), list(frequencies_1.values))
+# # plt.plot(list(frequencies_2.index), list(frequencies_2.values))
+# plt.show()
 
 max_generation_counts, max_generation_values, hazart_function = get_hazart_function(sim_results)
 
+# comparing with Dave's results
+df = pd.read_csv('Davids_code/full_extin_dist_v3.csv')
+
+plt.scatter(hazart_function.gens-1, hazart_function.probs, marker='x')
+plt.scatter(df.t[df['pin']==probability_in], df.hazard_b[df['pin']==probability_out])
+plt.gca().xaxis.get_major_locator().set_params(integer=True)
+plt.xlabel('generation')
+plt.ylabel('probability')
+plt.title('hazard function, p_in: ' + str(probability_in))
+plt.show()
 
