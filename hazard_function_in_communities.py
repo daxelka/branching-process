@@ -96,17 +96,17 @@ fig.set_figwidth(6)
 axs[0].scatter(hazard_function.gens, hazard_function.probs_both, marker="x", c=color1)
 axs[0].plot(df.t[df.pin==probability], df.hazard_b[df.pin==probability], c=color1)
 axs[0].set_title('whole network')
-axs[0].legend(['analytical', 'simulation'], frameon=False, loc='lower right')
+axs[0].legend(['simulation', 'analytical'], frameon=False, loc='lower right')
 
 axs[1].scatter(hazard_function.gens, hazard_function.probs_1, marker="x", c=color2)
 axs[1].plot(df.t[df.pin==probability], df.hazard_1[df.pin==probability], c=color2)
 axs[1].set_title('community #1')
-axs[1].legend(['analytical', 'simulation'], frameon=False, loc='lower right')
+axs[1].legend(['simulation', 'analytical'], frameon=False, loc='lower right')
 
 axs[2].scatter(hazard_function.gens, hazard_function.probs_2, marker="x", c=color3)
 axs[2].plot(df.t[df.pin==probability], df.hazard_2[df.pin==probability], c=color3)
 axs[2].set_title('community #2')
-axs[2].legend(['analytical', 'simulation'], frameon=False, loc='lower right')
+axs[2].legend(['simulation', 'analytical'], frameon=False, loc='lower right')
 axs[2].xaxis.get_major_locator().set_params(integer=True)
 
 for ax in axs.flat:
@@ -116,7 +116,7 @@ for ax in axs.flat:
 for ax in axs.flat:
     ax.label_outer()
 
-fig.savefig('img/hazard_function_p_'+ str(probability)+'.png', dpi=300)
+# fig.savefig('img/hazard_function_p_'+ str(probability)+'.png', dpi=300)
 plt.show()
 
 

@@ -15,7 +15,7 @@ lambda_in, lambda_out = 8, 2
 probabilities = list(set(df.pin))
 
 # simulation parameters
-n_simulations = 10000
+n_simulations = 100
 
 hazart_functions = []
 
