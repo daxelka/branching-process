@@ -15,7 +15,7 @@ lambda_in, lambda_out = 8, 2
 probabilities = list(set(df.pin))
 
 # simulation parameters
-n_simulations = 100
+n_simulations = 500
 probability = 0.04
 
 probability_in, probability_out = probability, probability
@@ -83,6 +83,7 @@ CB91_Violet = '#661D98'
 CB91_Amber = '#F5B14C'
 
 color1, color2, color3 = (CB91_Blue, CB91_Green, CB91_Pink)
+my_marker = '.'
 
 plt.rcParams['font.family'] = 'sans-serif'
 plt.rcParams['font.sans-serif'] = ['Arial']
@@ -93,20 +94,30 @@ fig.suptitle("Hazard function, probability of infection: " + str(probability))
 fig.set_figheight(6)
 fig.set_figwidth(6)
 
-axs[0].scatter(hazard_function.gens, hazard_function.probs_both, marker="x", c=color1)
+axs[0].scatter(hazard_function.gens, hazard_function.probs_both, marker=my_marker, c=color1)
 axs[0].plot(df.t[df.pin==probability], df.hazard_b[df.pin==probability], c=color1)
 axs[0].set_title('whole network')
+axs[0].set_ylim([0, 1])
+axs[0].set_xlim([0, 20])
 axs[0].legend(['simulation', 'analytical'], frameon=False, loc='lower right')
+# axs[0].legend(['simulation', 'analytical'], frameon=False, loc='upper left')
 
-axs[1].scatter(hazard_function.gens, hazard_function.probs_1, marker="x", c=color2)
+axs[1].scatter(hazard_function.gens, hazard_function.probs_1, marker=my_marker, c=color2)
 axs[1].plot(df.t[df.pin==probability], df.hazard_1[df.pin==probability], c=color2)
 axs[1].set_title('community #1')
+axs[1].set_ylim([0, 1])
+axs[1].set_xlim([0, 20])
 axs[1].legend(['simulation', 'analytical'], frameon=False, loc='lower right')
+# axs[1].legend(['simulation', 'analytical'], frameon=False, loc='upper left')
 
-axs[2].scatter(hazard_function.gens, hazard_function.probs_2, marker="x", c=color3)
+axs[2].scatter(hazard_function.gens, hazard_function.probs_2, marker=my_marker, c=color3)
 axs[2].plot(df.t[df.pin==probability], df.hazard_2[df.pin==probability], c=color3)
 axs[2].set_title('community #2')
+axs[2].set_ylim([0, 1])
+axs[2].set_xlim([0, 20])
 axs[2].legend(['simulation', 'analytical'], frameon=False, loc='lower right')
+# axs[2].legend(['simulation', 'analytical'], frameon=False, loc='lower left')
+
 axs[2].xaxis.get_major_locator().set_params(integer=True)
 
 for ax in axs.flat:
