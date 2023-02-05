@@ -15,7 +15,7 @@ lambda_in, lambda_out = 8, 2
 probabilities = list(set(df.pin))
 
 # simulation parameters
-n_simulations = 500
+n_simulations = 5
 probability = 0.04
 
 probability_in, probability_out = probability, probability
@@ -27,13 +27,14 @@ bp = BranchingProcessMultiType(seed_1, seed_2,
 
 
 # run branching process n_simulation types
-t_start = time.time()
-sim_results = bp.run_v2(n_simulations)
-print('elapsed time:', time.time() - t_start)
+# t_start = time.time()
+# sim_results = bp.run_v2(n_simulations)
+# print('elapsed time:', time.time() - t_start)
 
-# sim_results = pd.DataFrame({'generation': [0,1, 0,1,2, 0,1,2,3,],
-#                             'new_infections_1': [1,0, 1,2,0, 1,2,0,0],
-#                             'new_infections_2': [0,0, 0,1,0, 0,0,1,0]})
+sim_results = pd.DataFrame({'generation': [0,1, 0,1,2, 0,1,2,3,],
+                            'new_infections_1': [1,0, 1,2,0, 1,2,0,0],
+                            'new_infections_2': [0,0, 0,1,0, 0,0,1,0],
+                            'simulation_id': [0,0, 1,1,1, 2,2,2,2]})
 
 
 def hazard_function_in_communities(data):
@@ -41,7 +42,7 @@ def hazard_function_in_communities(data):
     hazard_prob_1 = [0]
     hazard_prob_2 = [0]
     hazard_prob_both = [0]
-    for gen in range(1,max_generation):
+    for gen in range(1, max_generation):
         data_current_gen = data[data.generation == gen]
         data_previous_gen = data[data.generation == gen - 1]
 
@@ -63,7 +64,19 @@ def hazard_function_in_communities(data):
     return hazard_function
 
 
+def duration_extinction(data):
+    max_simulation_id = max(data.simulation_id)
+    for simulation in range(max_simulation_id):
+        data_current = data[data.simulation_id == simulation]
+        print(np.count_nonzero(data_current.new_infections_1 == 0))
+
+    return 1
+
+
+print(sim_results)
 hazard_function = hazard_function_in_communities(sim_results)
+duration_extinction(sim_results)
+
 
 
 # visulation
