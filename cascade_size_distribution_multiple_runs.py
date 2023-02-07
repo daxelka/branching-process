@@ -27,7 +27,7 @@ lambda_in, lambda_out = 8, [0,2,4,6,8]  # Poisson lambda parameters
 prob_infection = 0.05
 
 # Network based simulation
-community_size = 500  # number of nodes in each communities
+community_size = 1000  # number of nodes in each communities
 # number of simulations
 n_sim = 50
 
@@ -45,6 +45,8 @@ plt.legend(['l_out: '+ str(l) for l in lambda_out])
 plt.title('l_in: ' + str(lambda_in) + ' p_in: ' + str(prob_infection))
 plt.xlabel('cascade size')
 plt.ylabel('probability')
+plt.yscale('log')
+plt.xlim([0,50])
 plt.show()
 
 
