@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import math
+import scipy.stats as stats
 
 
 def get_lifetime_distribution(results):
@@ -131,9 +132,9 @@ class BranchingProcessMultiType:
 
     def excess_poisson_probability(self, actual, mean):
         if type(actual) is list:
-            excess_probability = [(k + 1) / mean * self.poisson_probability(k + 1, mean) for k in actual]
+            excess_probability = [(k + 1) / mean * stats.poisson.pmf(k + 1, mean) for k in actual]
         elif type(actual) is int:
-            excess_probability = (actual + 1) / mean * self.poisson_probability(actual + 1, mean)
+            excess_probability = (actual + 1) / mean * stats.poisson.pmf(actual + 1, mean)
         else:
             raise ValueError('first parameter is neither list nor integer')
         return excess_probability
