@@ -52,13 +52,36 @@ class MTBPAnalysis:
 
         return cascade_size_dist_both, cascade_size_dist_1, cascade_size_dist_2
 
-    def duration_extinction(results_df):
+
+    def duration_extinction(self, results_df):
         max_simulation_id = max(results_df.simulation_id)
-        for simulation in range(max_simulation_id):
+        for simulation in range(max_simulation_id + 1):
             data_current = results_df[results_df.simulation_id == simulation]
-            print(np.count_nonzero(data_current.new_infections_1 == 0))
+            # print(np.count_nonzero(data_current.new_infections_1 == 0))
+            print('data', np.array(data_current.new_infections_1))
+            print('extint',self.zero_sequences(np.array(data_current.new_infections_1)))
 
         return 1
+
+
+    def zero_sequences(self, arr):
+        first_non_zero = None
+        zero_sequences = []
+        current_sequence = 0
+        for i in arr:
+            if first_non_zero is None:
+                if i != 0:
+                    first_non_zero = i
+            else:
+                if i == 0:
+                    current_sequence += 1
+                else:
+                    if current_sequence != 0:
+                        zero_sequences.append(current_sequence)
+                    current_sequence = 0
+        if current_sequence != 0:
+            zero_sequences.append(current_sequence)
+        return zero_sequences
 
     def get_lifetime_distribution(results):
         # to count the total frequencies for each values of total_infections

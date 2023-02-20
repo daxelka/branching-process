@@ -35,3 +35,6 @@ cascade_size_dist_both, cascade_size_dist_1, cascade_size_dist_2 = analysis.casc
 print(cascade_size_dist_1)
 print(cascade_size_dist_2)
 print(cascade_size_dist_both)
+
+extinction_duration = analysis.duration_extinction(sim_results)
+print(extinction_duration)
