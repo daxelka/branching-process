@@ -85,13 +85,22 @@ class BranchingProcessMultiType:
         results['new_infections_1'][generation] = offsprings_1
         results['new_infections_2'][generation] = offsprings_2
 
+        population_1 = offsprings_1
+        population_2 = offsprings_2
+
         # simulate the following simulations
         while generation < (self.max_generation - 1) and (offsprings_1 + offsprings_2) != 0:
             generation += 1
-            offsprings_1 = np.sum(self.infection_excess_distribution(population_1, self.lambda_in, self.p_in)) \
-                           + np.sum(self.infection_excess_distribution(population_2, self.lambda_out, self.p_out))
-            offsprings_2 = np.sum(self.infection_excess_distribution(population_1, self.lambda_out, self.p_out)) \
-                           + np.sum(self.infection_excess_distribution(population_2, self.lambda_in, self.p_in))
+
+            offsprings_1 = np.sum(self.infection_distribution(population_1, self.lambda_in, self.p_in)) \
+                           + np.sum(self.infection_distribution(population_2, self.lambda_out, self.p_out))
+            offsprings_2 = np.sum(self.infection_distribution(population_1, self.lambda_out, self.p_out)) \
+                           + np.sum(self.infection_distribution(population_2, self.lambda_in, self.p_in))
+            # excess distribution
+            # offsprings_1 = np.sum(self.infection_excess_distribution(population_1, self.lambda_in, self.p_in)) \
+            #                + np.sum(self.infection_excess_distribution(population_2, self.lambda_out, self.p_out))
+            # offsprings_2 = np.sum(self.infection_excess_distribution(population_1, self.lambda_out, self.p_out)) \
+            #                + np.sum(self.infection_excess_distribution(population_2, self.lambda_in, self.p_in))
             # results['new_infections_type1'][generation] = offsprings_1
             # results['new_infections_type2'][generation] = offsprings_2
             results.loc[generation, 'new_infections_1'] = offsprings_1  # may be a faster way
@@ -130,6 +139,7 @@ class BranchingProcessMultiType:
                                 replace=True,
                                 p=self.excess_poisson_probability(list(range(100)), lambda_param))
 
+
     def excess_poisson_probability(self, actual, mean):
         if type(actual) is list:
             excess_probability = [(k + 1) / mean * stats.poisson.pmf(k + 1, mean) for k in actual]
@@ -139,15 +149,15 @@ class BranchingProcessMultiType:
             raise ValueError('first parameter is neither list nor integer')
         return excess_probability
 
-    @staticmethod
-    def poisson_probability(actual, mean):
-        # naive:   math.exp(-mean) * mean**actual / factorial(actual)
-        # iterative, to keep the components from getting too large or small:
-        p = math.exp(-mean)
-        for i in range(actual):
-            p *= mean
-            p /= i + 1
-        return p
+    # @staticmethod
+    # def poisson_probability(actual, mean):
+    #     # naive:   math.exp(-mean) * mean**actual / factorial(actual)
+    #     # iterative, to keep the components from getting too large or small:
+    #     p = math.exp(-mean)
+    #     for i in range(actual):
+    #         p *= mean
+    #         p /= i + 1
+    #     return p
 
 
     def run(self, n_simulations):
