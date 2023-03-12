@@ -52,7 +52,7 @@ print('elapsed time:', time.time() - t_start)
 mt_lifetime_distribution = mt_get_lifetime_distribution(results_bp)
 
 # comparing with Dave's results
-df = pd.read_csv('Davids_code/full_extin_dist.csv')
+df = pd.read_csv('Davids_code/data/full_extin_dist.csv')
 
 # lifetime distribution visualisation
 ax = plt.figure().gca()

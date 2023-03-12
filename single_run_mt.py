@@ -52,7 +52,7 @@ frequencies_2 = frequencies_2.sort_values()
 max_generation_counts, max_generation_values, hazart_function = get_hazart_function(sim_results)
 
 # comparing with Dave's results
-df = pd.read_csv('Davids_code/full_extin_dist_v3.csv')
+df = pd.read_csv('Davids_code/data/full_extin_dist_v3.csv')
 
 plt.scatter(hazart_function.gens-1, hazart_function.probs, marker='x')
 plt.scatter(df.t[df['pin']==probability_in], df.hazard_b[df['pin']==probability_out])

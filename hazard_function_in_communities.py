@@ -8,8 +8,8 @@ from bp_mt_class import get_hazart_function
 from mtbp_analysis_class import MTBPAnalysis
 
 # load Dave's results
-df = pd.read_csv('Davids_code/full_extin_dist_v4.csv')
-sim_results = pd.read_csv('data_temp_no_excess_distribution.csv')
+df = pd.read_csv('Davids_code/data/full_extin_dist_v4.csv')
+# sim_results = pd.read_csv('data/mtbp_pin_0p09.csv')
 
 # branching process parameters
 seed_1, seed_2 = 1, 0
@@ -18,21 +18,21 @@ probabilities = list(set(df.pin))
 #
 # simulation parameters
 n_simulations = 10000
-probability = 0.09
+probability = 0.06
 #
 probability_in, probability_out = probability, probability
 
-# # initiate branching process
-# bp = BranchingProcessMultiType(seed_1, seed_2,
-#                            lambda_in, lambda_out,
-#                            probability_in, probability_out)
-#
-#
-# # run branching process n_simulation types
-# t_start = time.time()
-# sim_results = bp.run_v2(n_simulations)
-# print('elapsed time:', time.time() - t_start)
-# sim_results.to_csv('data_temp_no_excess_distribution.csv')
+# initiate branching process
+bp = BranchingProcessMultiType(seed_1, seed_2,
+                           lambda_in, lambda_out,
+                           probability_in, probability_out)
+
+
+# run branching process n_simulation types
+t_start = time.time()
+sim_results = bp.run_v2(n_simulations)
+print('elapsed time:', time.time() - t_start)
+sim_results.to_csv('mtbp_pin_' + str(probability)+'.csv')
 
 
 analysis = MTBPAnalysis()

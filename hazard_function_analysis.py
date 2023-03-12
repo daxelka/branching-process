@@ -7,7 +7,7 @@ from bp_mt_class import BranchingProcessMultiType
 from bp_mt_class import get_hazart_function
 
 # load Dave's results
-df = pd.read_csv('Davids_code/full_extin_dist_v3.csv')
+df = pd.read_csv('Davids_code/data/full_extin_dist_v3.csv')
 
 # branching process parameters
 seed_1, seed_2 = 1, 0
