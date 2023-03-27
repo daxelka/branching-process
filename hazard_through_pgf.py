@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 lin, lout = 8, 2
-pin = 0.9
+pin = 0.09
 
 def g_X_1(s1, s2, lin, lout, pin):
     ans = np.exp(lin * pin * (s1 - 1)) * np.exp(lout * pin * (s2 - 1))
@@ -14,8 +14,7 @@ def g_X_2(s1, s2, lin, lout, pin):
     return ans
 
 def gic_1(s1, s2):
-    ans = s1 + s2 - 1
-    return ans
+    return s1
 
 
 def G_N_t(s1, s2, t, lin, lout, pin):
@@ -28,38 +27,24 @@ def G_N_t(s1, s2, t, lin, lout, pin):
     ans = gic_1(s1, s2)  # apply initial conditions
     return ans
 
-
-# pgf for for N(t) > 0
-def G_Y_t(s1, s2, t, lin=8, lout=2, pin=0.05):
-    if t >= 0:
-        # find the prob of process ending at t
-        G_N_t_num = G_N_t(0, 0, t, lin, lout, pin)
-
-        # create pgf for G_Y_t by subtracting G_N_t_num and normalising it
-        ans = (G_N_t(s1, s2, t, lin, lout, pin) - G_N_t_num) / (1 - G_N_t_num)
-    else:
-        ans = 0
-    return ans
-
-def G_H_t(s1, s2, t, lin=8, lout=2, pin=0.05):
-    if t >= 0:
-        G_Y_t_num = G_Y_t(g_X_1(s1, s2, lin, lout, pin),
-                          g_X_2(s1, s2, lin, lout, pin),
-                          t-1, lin, lout, pin)
-        ans = G_Y_t(s1, s2, t, lin, lout, pin) - G_Y_t_num
-    else:
-        ans = 0
-    return ans
-
-t = list(range(11))
-full_sur_dis_df = pd.DataFrame({'t': t})
-full_sur_dis_df['hazard_1'] = full_sur_dis_df['t'].apply(lambda x: G_H_t(0, 1, x, lin, lout, pin))
-full_sur_dis_df['hazard_2'] = full_sur_dis_df['t'].apply(lambda x: G_H_t(1, 0, x, lin, lout, pin))
-full_sur_dis_df['hazard_b'] = full_sur_dis_df['t'].apply(lambda x: G_H_t(0, 0, x, lin, lout, pin))
-full_sur_dis_df['q_1'] = full_sur_dis_df['t'].apply(lambda x: G_N_t(0, 1, x, lin, lout, pin))
-full_sur_dis_df['q_2'] = full_sur_dis_df['t'].apply(lambda x: G_N_t(1, 0, x, lin, lout, pin))
-full_sur_dis_df['q_b'] = full_sur_dis_df['t'].apply(lambda x: G_N_t(0, 0, x, lin, lout, pin))
+# probability of extinction q(t)=P[N(t)=0]=G_N(t)(0)
+t_list = list(range(11))
+probs_com1 = []
+probs_com2 = []
+for t in t_list:
+    probs_com1.append(G_N_t(0, 1, t, lin, lout, pin))
+    probs_com2.append(G_N_t(1, 0, t, lin, lout, pin))
+    # print('com 1: ', G_N_t(0, 1, t, lin, lout, pin), 'com 2: ', G_N_t(1, 0, t, lin, lout, pin))
 
 
-plt.plot(full_sur_dis_df.t,full_sur_dis_df.q_b)
+df = pd.read_csv('full_extin_dist_v4.csv')
+
+
+plt.plot(t_list, probs_com1)
+plt.plot(t_list, probs_com2)
+plt.scatter(df.t[df.pin ==pin], df.q_1[df.pin ==pin])
+plt.scatter(df.t[df.pin ==pin], df.q_2[df.pin ==pin])
+plt.xlabel('generation')
+plt.ylabel('probability')
+plt.title('probability of extinction')
 plt.show()
