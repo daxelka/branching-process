@@ -9,7 +9,7 @@ from mtbp_analysis_class import MTBPAnalysis
 
 # load Dave's results
 df = pd.read_csv('full_extin_dist_v4.csv')
-# sim_results = pd.read_csv('mtbp_pin_0.06.csv')
+sim_results = pd.read_csv('mtbp_pin_0.06.csv')
 # df = pd.read_csv('Davids_code/data/full_extin_dist_v4.csv')
 # sim_results = pd.read_csv('data/mtbp_pin_0p09.csv')
 # sim_results = pd.read_csv('data/mtbp_pin_0.06.csv')
@@ -22,7 +22,7 @@ probabilities = list(set(df.pin))
 #
 # simulation parameters
 n_simulations = 10000
-probability = 0.09
+probability = 0.06
 #
 probability_in, probability_out = probability, probability
 
@@ -32,11 +32,11 @@ bp = BranchingProcessMultiType(seed_1, seed_2,
                            probability_in, probability_out)
 
 
-# run branching process n_simulation types
-t_start = time.time()
-sim_results = bp.run_v2(n_simulations)
-print('elapsed time:', time.time() - t_start)
-sim_results.to_csv('mtbp_pin_' + str(probability)+'.csv')
+# # run branching process n_simulation types
+# t_start = time.time()
+# sim_results = bp.run_v2(n_simulations)
+# print('elapsed time:', time.time() - t_start)
+# sim_results.to_csv('mtbp_pin_' + str(probability)+'.csv')
 
 
 analysis = MTBPAnalysis()

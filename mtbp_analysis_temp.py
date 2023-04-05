@@ -12,7 +12,7 @@ lambda_in, lambda_out = 8, 2
 
 # simulation parameters
 n_simulations = 5
-probability = 0.04
+probability = 0.06
 
 probability_in, probability_out = probability, probability
 
@@ -31,10 +31,12 @@ print('elapsed time:', time.time() - t_start)
 analysis = MTBPAnalysis()
 
 # analysis.get_max_simulation_id(sim_results)
-cascade_size_dist_both, cascade_size_dist_1, cascade_size_dist_2 = analysis.cascade_distribution(sim_results)
-print(cascade_size_dist_1)
-print(cascade_size_dist_2)
-print(cascade_size_dist_both)
-
-extinction_duration = analysis.duration_extinction(sim_results)
-print(extinction_duration)
+# cascade_size_dist_both, cascade_size_dist_1, cascade_size_dist_2 = analysis.cascade_distribution(sim_results)
+# print(cascade_size_dist_1)
+# print(cascade_size_dist_2)
+# print(cascade_size_dist_both)
+#
+# extinction_duration = analysis.duration_extinction(sim_results)
+# print(extinction_duration)
+ext_prob = analysis.extinction_probability(sim_results)
+print(ext_prob)
