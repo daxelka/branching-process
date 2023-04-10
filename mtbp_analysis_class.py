@@ -11,6 +11,7 @@ class MTBPAnalysis:
            The DataFrame should have columns 'generation', 'new_infections_1', 'new_infections_2',
            and 'simulation_id'.
            :return hazard function for community 1, hazard function for community 2, hazard function for both communities
+           Note: faster method
         """
         max_generation = max(results_df.generation)
         hazard_prob_1 = [0]
@@ -45,6 +46,7 @@ class MTBPAnalysis:
            The DataFrame should have columns 'generation', 'new_infections_1', 'new_infections_2',
            and 'simulation_id'.
            :return hazard function for community 1, hazard function for community 2, hazard function for both communities
+           Note: Slower method
         """
         results_df['new_infections_both'] = results_df['new_infections_1'] + results_df['new_infections_2']
         hazard_function = (results_df
@@ -56,37 +58,67 @@ class MTBPAnalysis:
                                   new_infections_2_true=lambda x: (x['new_infections_2'] == 0).replace({True: 1, False: 0}),
                                   new_infections_both_true=lambda x: (x['new_infections_both'] == 0).replace({True: 1, False: 0}))
                           .groupby('generation')
-                          .agg(hazard_1=('new_infections_1_true', 'mean'),
-                               hazard_2=('new_infections_2_true', 'mean'),
-                               hazard_both=('new_infections_both_true', 'mean'))
+                          .agg(probs_1=('new_infections_1_true', 'mean'),
+                               probs_2=('new_infections_2_true', 'mean'),
+                               probs_both=('new_infections_both_true', 'mean'))
                           )
 
         # adding a row on top for the o generation
-        row_generation_0 = pd.DataFrame({'hazard_1': 0, 'hazard_2': 0, 'hazard_3': 0}, index=[0])
+        row_generation_0 = pd.DataFrame({'probs_1': 0, 'probs_2': 0, 'probs_both': 0}, index=[0])
         hazard_function = pd.concat([row_generation_0, hazard_function]).reset_index(drop=True)
+        hazard_function['gens'] = list(range(len(hazard_function['probs_both'])))
+
+        # deleting the last row as it always corresponds to zero offsprings
+        hazard_function = hazard_function.drop(hazard_function.tail(1).index)
 
         return hazard_function
 
-    def extinction_probability(self, results_df):
+    # def extinction_probability(self, results_df):
+    #     results_df['new_infections_both'] = results_df['new_infections_1'] + results_df['new_infections_2']
+    #     max_generation = max(results_df.generation)
+    #     max_sim_id = max(results_df.simulation_id)
+    #     data_table = []
+    #     for sim in range(max_sim_id+1):
+    #         data_slice = list(results_df[results_df.simulation_id == sim]['new_infections_both'])
+    #         if len(data_slice) < max_generation + 1:
+    #             data_table.append(data_slice + [0]*(max_generation + 1 - len(data_slice)))
+    #         else:
+    #             data_table.append(data_slice)
+    #     extinct_probs = []
+    #     for gen in range(max_generation + 1):
+    #         extinct_true_false_grouped_by_gen = [1 if data_table[sim][gen] == 0 else 0 for sim in range(max_sim_id+1)]
+    #         extinct_probs.append(sum(extinct_true_false_grouped_by_gen)/len(extinct_true_false_grouped_by_gen)) # take the mean
+    #     return pd.DataFrame({'gens': list(range(max_generation+1)),
+    #                          'probs': extinct_probs})
+
+    def extinction_probability(self, results_df, column_name):
         results_df['new_infections_both'] = results_df['new_infections_1'] + results_df['new_infections_2']
         max_generation = max(results_df.generation)
         max_sim_id = max(results_df.simulation_id)
         data_table = []
         for sim in range(max_sim_id+1):
-            data_slice = list(results_df[results_df.simulation_id == sim]['new_infections_both'])
+            data_slice = list(results_df[results_df.simulation_id == sim][column_name])
             if len(data_slice) < max_generation + 1:
                 data_table.append(data_slice + [0]*(max_generation + 1 - len(data_slice)))
             else:
                 data_table.append(data_slice)
         extinct_probs = []
         for gen in range(max_generation + 1):
-            extinct_true_false_grouped_by_gen = [1 if data_table[sim][gen]==0 else 0 for sim in range(max_sim_id+1)]
+            extinct_true_false_grouped_by_gen = [1 if data_table[sim][gen] == 0 else 0 for sim in range(max_sim_id+1)]
             extinct_probs.append(sum(extinct_true_false_grouped_by_gen)/len(extinct_true_false_grouped_by_gen)) # take the mean
         return pd.DataFrame({'gens': list(range(max_generation+1)),
                              'probs': extinct_probs})
 
-    def extinction_probility_multitype(self, sim_results):
-        column_name = 'new_infections_1'
+    def extinction_probability_mt(self, results_df):
+        results_df['new_infections_both'] = results_df['new_infections_1'] + results_df['new_infections_2']
+        column_names = ['new_infections_both', 'new_infections_1', 'new_infections_2']
+        extinction_df = pd.DataFrame()
+        for column_name in column_names:
+            df = self.extinction_probability(results_df, column_name)
+            extinction_df[column_name] = df.probs
+
+        extinction_df['gens'] = df.gens
+        return extinction_df
 
     def get_max_simulation_id(self, results_df):
         return max(results_df.simulation_id)
