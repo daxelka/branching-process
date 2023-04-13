@@ -2,60 +2,11 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from mtbp_analysis_class import MTBPAnalysis
+from pgf_analysis_class import PGFAnalysis
 import time
 
 lin, lout = 8, 2
 pin = 0.06
-
-def g_X_1(s1, s2, lin, lout, pin):
-    ans = np.exp(lin * pin * (s1 - 1)) * np.exp(lout * pin * (s2 - 1))
-    return ans
-
-def g_X_2(s1, s2, lin, lout, pin):
-    ans = np.exp(lin * pin * (s2 - 1)) * np.exp(lout * pin * (s1 - 1))
-    return ans
-
-def gic_1(s1, s2):
-    return s1
-
-
-def G_N_t(s1, s2, t, lin, lout, pin):
-    if t > 0:  # have to iterate the pgf at least one
-        for t_i in range(t, 0, -1):  # iterate the function t times
-            new_s1 = g_X_1(s1, s2, lin, lout, pin)
-            new_s2 = g_X_2(s1, s2, lin, lout, pin)
-            s1 = new_s1
-            s2 = new_s2
-    ans = gic_1(s1, s2)  # apply initial conditions
-    return ans
-
-# pgf for for N(t) > 0
-def G_Y_t(s1, s2, t, lin=8, lout=2, pin=0.05):
-    if t >= 0:
-        # find the prob of process ending at t
-        q_fun = G_N_t(0, 0, t, lin, lout, pin)
-
-        # create pgf for G_Y_t by subtracting G_N_t_num and normalising it
-        ans = (G_N_t(s1, s2, t, lin, lout, pin) - q_fun) / (1 - q_fun)
-    else:
-        ans = 0
-    return ans
-
-# Hazard function
-def G_H_t(t, lin=8, lout=2, pin=0.05):
-    if t >= 0:
-        probs_both = G_Y_t(g_X_1(0, 0, lin, lout, pin),
-                     g_X_2(0, 0, lin, lout, pin),
-                     t-1, lin, lout, pin)
-        probs_1 = G_Y_t(g_X_1(0, 1, lin, lout, pin),
-                     g_X_2(0, 1, lin, lout, pin),
-                     t-1, lin, lout, pin)
-        probs_2 = G_Y_t(g_X_1(1, 0, lin, lout, pin),
-                        g_X_2(1, 0, lin, lout, pin),
-                        t - 1, lin, lout, pin)
-    else:
-        probs_both, probs_1, probs_2 = 0, 0, 0
-    return probs_both, probs_1, probs_2
 
 # plotting
 
@@ -94,9 +45,10 @@ def plotting(curves_list, title='my title', xlim=[0,10], if_safe=False):
         plt.show()
     print('plotted')
 
+# PGF analysis
+pgf_analysis = PGFAnalysis()
 
-# probability of extinction q(t)=P[N(t)=0]
-# from pgf q(t) = G_N(t)(0,0)
+# probability of extinction q(t) = P[N(t)=0]= G_N(t)(0,0)
 t_list = list(range(20))
 ext_prob_pgf_both = []
 ext_prob_pgf_1 = []
@@ -104,15 +56,9 @@ ext_prob_pgf_2 = []
 
 
 for t in t_list:
-    ext_prob_pgf_both.append(G_N_t(0, 0, t, lin, lout, pin))
-    ext_prob_pgf_1.append(G_N_t(0, 1, t, lin, lout, pin))
-    ext_prob_pgf_2.append(G_N_t(1, 0, t, lin, lout, pin))
-
-# from simulation
-sim_results = pd.read_csv('mtbp_pin_0.06.csv')
-analysis = MTBPAnalysis()
-# ext_prob_sim = analysis.extinction_probability(sim_results,'new_infections_both')
-ext_prob_sim = analysis.extinction_probability_mt(sim_results)
+    ext_prob_pgf_both.append(pgf_analysis.G_N_t(0, 0, t, lin, lout, pin))
+    ext_prob_pgf_1.append(pgf_analysis.G_N_t(0, 1, t, lin, lout, pin))
+    ext_prob_pgf_2.append(pgf_analysis.G_N_t(1, 0, t, lin, lout, pin))
 
 # hazard function from pgf
 hazard_pgf_both = []
@@ -120,10 +66,18 @@ hazard_pgf_1 = []
 hazard_pgf_2 = []
 
 for t in t_list:
-    probs_both, probs_1, probs_2 = G_H_t(t, lin, lout, pin)
+    probs_both, probs_1, probs_2 = pgf_analysis.G_H_t(t, lin, lout, pin)
     hazard_pgf_both.append(probs_both)
     hazard_pgf_1.append(probs_1)
     hazard_pgf_2.append(probs_2)
+
+
+# from simulation
+sim_results = pd.read_csv('mtbp_pin_0.06.csv')
+
+analysis = MTBPAnalysis()
+# ext_prob_sim = analysis.extinction_probability(sim_results,'new_infections_both')
+ext_prob_sim = analysis.extinction_probability_mt(sim_results)
 
 # hazard function from simulation
 hazard_sim = analysis.hazard_function_in_communities(sim_results)
@@ -137,7 +91,7 @@ plotting_data = [{'gens_analyt': t_list, 'probs_analyt': hazard_pgf_both, 'label
                   'gens_num': hazard_sim.gens, 'probs_num': hazard_sim.probs_2, 'label_num': 'type 2 (simulation)'}
                  ]
 
-plotting(plotting_data, title='hazard function', if_safe=True)
+plotting(plotting_data, title='hazard function', if_safe=False)
 
 # plt.plot(t_list, hazard_pgf_both, c=my_colors[0])
 # plt.scatter(hazard_sim_v1.gens, hazard_sim_v1.probs_both, c=my_colors[0])
