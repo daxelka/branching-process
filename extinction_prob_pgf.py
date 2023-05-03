@@ -62,6 +62,23 @@ plotting_extinction = [{'gens_analyt': t_list, 'probs_analyt': ext_prob_pgf_both
                   'gens_num': ext_prob_sim.gens, 'probs_num': ext_prob_sim.new_infections_2, 'label_num': 'type 2 (simulation)'}
                  ]
 
-myplt = Plotting()
-myplt.plot(plotting_extinction, title='hazard function', if_safe=False)
+#temp
+hazard_pgf_1_my = []
+hazard_pgf_2_my = []
+for t in t_list:
+    hazard_pgf_1_my.append(pgf_analysis.hazard_pgf_com1(t, lin, lout, pin))
+    hazard_pgf_2_my.append(pgf_analysis.hazard_pgf_com2(t, lin, lout, pin))
+
+plt.scatter(t_list, hazard_pgf_1, c='b')
+plt.plot(t_list, hazard_pgf_1_my, c='b')
+plt.scatter(t_list, hazard_pgf_2, c='r')
+plt.plot(t_list, hazard_pgf_2_my, c='r')
+plt.show()
+
+
+
+# myplt = Plotting()
+# myplt.plot(plotting_extinction, title='hazard function', if_safe=False)
+
+
 

@@ -141,3 +141,23 @@ class PGFAnalysis:
         else:
             probs_both, probs_1, probs_2 = 0, 0, 0
         return probs_both, probs_1, probs_2
+
+    def hazard_pgf_com1(self, t, lin, lout, pin):
+        if t > 0:
+            h = (self.G_N_t(0, 1, t, lin, lout, pin) - self.G_N_t(0, 0, t - 1, lin, lout, pin)) / (
+                        1 - self.G_N_t(0, 0, t - 1, lin, lout, pin))
+            # print('G_N_t(0,1,t): ', G_N_t(0,1,t,lin,lout,pin), 'G_N_t(0,1,t-1): ', G_N_t(0,1,t-1,lin,lout,pin), 'G_N_t(0,0,t-1): ', G_N_t(0,0,t-1,lin,lout,pin))
+            # print('h:', h)
+            return h
+        else:
+            return 0
+
+    def hazard_pgf_com2(self, t, lin, lout, pin):
+        if t > 0:
+            h = (self.G_N_t(1, 0, t, lin, lout, pin) - self.G_N_t(0, 0, t - 1, lin, lout, pin)) / (
+                        1 - self.G_N_t(0, 0, t - 1, lin, lout, pin))
+            # print('G_N_t(0,1,t): ', G_N_t(0,1,t,lin,lout,pin), 'G_N_t(0,1,t-1): ', G_N_t(0,1,t-1,lin,lout,pin), 'G_N_t(0,0,t-1): ', G_N_t(0,0,t-1,lin,lout,pin))
+            # print('h:', h)
+            return h
+        else:
+            return 0
