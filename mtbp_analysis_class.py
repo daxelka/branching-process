@@ -146,35 +146,40 @@ class MTBPAnalysis:
     def duration_extinction(self, results_df):
         max_simulation_id = max(results_df.simulation_id)
         extinction_arr = []
+        generations_reinfection = []
         for simulation in range(max_simulation_id + 1):
             data_current = results_df[results_df.simulation_id == simulation]
             # print(np.count_nonzero(data_current.new_infections_1 == 0))
-            print('data', np.array(data_current.new_infections_1))
-            print('extint',self.zero_sequences(np.array(data_current.new_infections_1)))
+            # print('data', np.array(data_current.new_infections_1))
+            # print('extint',self.zero_sequences(np.array(data_current.new_infections_1)))
 
-            extinction_arr = extinction_arr + self.zero_sequences(np.array(data_current.new_infections_1))
+            zero_sequence, gen_reinfection = self.calc_zero_sequences(np.array(data_current.new_infections_1))
+            extinction_arr = extinction_arr + zero_sequence
+            generations_reinfection = generations_reinfection + gen_reinfection
 
-        return extinction_arr
+        return extinction_arr, generations_reinfection
 
 
-    def zero_sequences(self, arr):
+    def calc_zero_sequences(self, arr):
         first_non_zero = None
         zero_sequences = []
+        gen_reinfections = []
         current_sequence = 0
-        for i in arr:
+        for pos, num in enumerate(arr):
             if first_non_zero is None:
-                if i != 0:
-                    first_non_zero = i
+                if num != 0:
+                    first_non_zero = num
             else:
-                if i == 0:
+                if num == 0:
                     current_sequence += 1
                 else:
                     if current_sequence != 0:
                         zero_sequences.append(current_sequence)
+                        gen_reinfections.append(pos)
                     current_sequence = 0
-        if current_sequence != 0:
-            zero_sequences.append(current_sequence)
-        return zero_sequences
+        # if current_sequence != 0:
+        #     zero_sequences.append(current_sequence)
+        return zero_sequences, gen_reinfections
 
     def get_lifetime_distribution(results):
         # to count the total frequencies for each values of total_infections
@@ -183,3 +188,23 @@ class MTBPAnalysis:
         lifetime_distribution = pd.DataFrame({'gens': np.array(max_generation_bp.index),
                                               'probs': list(max_generation_bp.values)})
         return lifetime_distribution
+
+    def reinfection_probability(self, sim_results, column_name='new_infections_1'):
+        max_generation = max(sim_results.generation)
+        probs = []  # enforce value for the generation 0
+        for gen in range(1, max_generation + 1):
+            # take all the simulations which survived until that gen
+            reinfection_rows = sim_results[
+                (sim_results['generation'] == gen) & (sim_results[column_name].shift() == 0)]
+            # survived until gen-1 and have zero offspring in gen-1
+            count_zeros_generation_minus_1 = sim_results[
+                (sim_results['generation'] == gen - 1) & (sim_results[column_name] == 0)]
+
+            if len(count_zeros_generation_minus_1) > 0:
+                prob = len(reinfection_rows) / len(count_zeros_generation_minus_1)
+            else:
+                prob = np.nan
+
+            probs.append(prob)
+        return pd.DataFrame({'gens': list(range(1, max_generation + 1)),
+                             'probs': probs})

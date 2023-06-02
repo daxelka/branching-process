@@ -161,3 +161,14 @@ class PGFAnalysis:
             return h
         else:
             return 0
+
+    def reinfection_probability(self, t, lin, lout, pin):
+        h1_t = self.hazard_pgf_com1(t, lin, lout, pin)
+        q1_t = self.G_N_t(0, 1, t, lin, lout, pin)
+        q1_tm1 = self.G_N_t(0, 1, t-1, lin, lout, pin)
+
+        if q1_tm1 > 0:
+            prob = (q1_t - h1_t * (1 - q1_tm1))/q1_tm1
+        else:
+            prob = np.nan
+        return prob

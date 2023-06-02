@@ -35,7 +35,7 @@ for t in t_list:
     hazard_pgf_2.append(probs_2)
 
 # from simulation
-sim_results = pd.read_csv('mtbp_pin_0.09.csv')
+sim_results = pd.read_csv('sim_data/mtbp_pin_0.09.csv')
 
 analysis = MTBPAnalysis()
 # ext_prob_sim = analysis.extinction_probability(sim_results,'new_infections_both')
