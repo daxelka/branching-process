@@ -125,22 +125,35 @@ class MTBPAnalysis:
 
     def cascade_distribution(self, results_df):
         max_simulation_id = self.get_max_simulation_id(results_df)
-        cascades_1 = []
-        cascades_2 = []
-        cascades_both = []
+        cascades_1_list = []
+        cascades_2_list = []
+        cascades_both_list = []
         for simulation in range(max_simulation_id+1):
             data_slice = results_df[results_df.simulation_id == simulation]
-            cascades_1.append(max(data_slice.total_infections_1))
-            cascades_2.append(max(data_slice.total_infections_2))
-            cascades_both.append(max(data_slice.total_infections))
+            cascades_1_list.append(max(data_slice.total_infections_1))
+            cascades_2_list.append(max(data_slice.total_infections_2))
+            cascades_both_list.append(max(data_slice.total_infections))
 
-        # print(cascades_both)
-        # print(pd.Series(cascades_both))
-        cascade_size_dist_1 = pd.Series(cascades_1).value_counts().sort_index()
-        cascade_size_dist_2 = pd.Series(cascades_2).value_counts().sort_index()
-        cascade_size_dist_both = pd.Series(cascades_both).value_counts().sort_index()
+        cascades_1 = pd.Series(cascades_1_list).value_counts().sort_index()
+        cascades_2 = pd.Series(cascades_2_list).value_counts().sort_index()
+        cascades_both = pd.Series(cascades_both_list).value_counts().sort_index()
 
-        return cascade_size_dist_both, cascade_size_dist_1, cascade_size_dist_2
+        # Find the maximum index value from both series
+        max_index = max(cascades_both.index.max(), cascades_1.index.max(), cascades_2.index.max())
+
+        # Create a new range of indices from 1 to the maximum value
+        new_indices = range(1, max_index + 1)
+
+        # Reindex both series using the new indices and fill missing values with zeros
+        cascades_both = cascades_both.reindex(new_indices, fill_value=0)
+        cascades_1 = cascades_1.reindex(new_indices, fill_value=0)
+        cascades_2 = cascades_2.reindex(new_indices, fill_value=0)
+
+        # Combine the two series into a single DataFrame
+        cascades_df = pd.concat([cascades_both, cascades_1, cascades_2], axis=1)
+        cascades_df.columns = ['cascades_both', 'cascades_1', 'cascades_2']
+
+        return cascades_df
 
 
     def duration_extinction(self, results_df):

@@ -13,7 +13,7 @@ lambda_in, lambda_out = 8, 2
 
 # simulation parameters
 n_simulations = 100000
-probability = 0.08
+probability = 0.02
 probability_in, probability_out = probability, probability
 
 # initiate branching process
