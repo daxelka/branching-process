@@ -134,9 +134,9 @@ class MTBPAnalysis:
             cascades_2_list.append(max(data_slice.total_infections_2))
             cascades_both_list.append(max(data_slice.total_infections))
 
-        cascades_1 = pd.Series(cascades_1_list).value_counts().sort_index()
-        cascades_2 = pd.Series(cascades_2_list).value_counts().sort_index()
-        cascades_both = pd.Series(cascades_both_list).value_counts().sort_index()
+        cascades_1 = pd.Series(cascades_1_list).value_counts().sort_index() / max_simulation_id
+        cascades_2 = pd.Series(cascades_2_list).value_counts().sort_index() / max_simulation_id
+        cascades_both = pd.Series(cascades_both_list).value_counts().sort_index() / max_simulation_id
 
         # Find the maximum index value from both series
         max_index = max(cascades_both.index.max(), cascades_1.index.max(), cascades_2.index.max())

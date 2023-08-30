@@ -53,7 +53,7 @@ class BranchingProcessMultiType:
     def __init__(self, seed1=1, seed2=0,
                  lambda_in=6, lambda_out=6,
                  probability_in=0.05, probability_out=0.05):
-        self.max_generation = int(100)
+        self.max_generation = int(1e04)
         self.rng = np.random.default_rng()
         self.seed_1 = seed1
         self.seed_2 = seed2
@@ -111,6 +111,9 @@ class BranchingProcessMultiType:
         # cut off the results at the first generation with  zero offsprings
         if (offsprings_1 + offsprings_2) == 0:
             results = results.loc[:generation, :]
+
+        if generation == self.max_generation - 1:
+            print('simulation is cut off at a maximum generation= ' + str(self.max_generation))
 
         # calculate total infections in each generation
         results['total_infections_1'] = np.cumsum(results['new_infections_1'])

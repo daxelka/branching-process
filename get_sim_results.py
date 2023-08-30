@@ -12,8 +12,8 @@ seed_1, seed_2 = 1, 0
 lambda_in, lambda_out = 8, 2
 
 # simulation parameters
-n_simulations = 100000
-probability = 0.02
+n_simulations = int(5e05)
+probability = 0.095
 probability_in, probability_out = probability, probability
 
 # initiate branching process
@@ -27,4 +27,4 @@ sim_results = bp.run_v2(n_simulations)
 print('elapsed time:', time.time() - t_start)
 
 # write to file
-sim_results.to_csv('data/sim_results/p_' + str(probability) + '_n_sim_' + str(n_simulations) + '.csv')
+sim_results.to_csv('data/sim_results/p_' + str(probability) + '_n_sim_' + str(n_simulations) + '_results_cor.csv')
