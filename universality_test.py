@@ -16,7 +16,7 @@ n_simulations = int(5e05)
 probabilities_infection = [0.06, 0.08, 0.09, 0.095]
 cascades_list = []
 
-# analysis
+# Cascades from numerical simulations
 analysis = MTBPAnalysis()
 
 for probability in probabilities_infection:
@@ -24,14 +24,14 @@ for probability in probabilities_infection:
     cascades = pd.read_csv(file_name)
     cascades_list.append(cascades)
 
-# plotting
-for cascades in cascades_list:
-    plt.scatter(cascades.index, cascades['cascades_both'])
-
-plt.xlim([0,170])
-plt.gca().yaxis.get_major_locator().set_params(integer=True)
-plt.yscale('log')
-plt.show()
+# # plotting
+# for cascades in cascades_list:
+#     plt.scatter(cascades.index, cascades['cascades_both'])
+#
+# plt.xlim([0,170])
+# plt.gca().yaxis.get_major_locator().set_params(integer=True)
+# plt.yscale('log')
+# plt.show()
 
 # cleaning data from -inf and remove the early and late point, leave the middle
 critical_cascades = cascades_list[-1]
@@ -56,7 +56,7 @@ fit_line = np.exp(fit_line_log)
 
 # plotting
 for count, cascades in enumerate(cascades_list):
-    plt.scatter(cascades.index, cascades['cascades_both'], s=2, label='p: '+str(probabilities_infection[count]))
+    plt.scatter(cascades.index, cascades['cascades_both'], s=2, label='p: '+str(round(probabilities_infection[count]/0.1, 2))+' p*')
 # plt.scatter(critical_cascades['x_coord'], critical_cascades['cascades_both'])
 plt.plot(critical_cascades['x_coord'], fit_line, color='red')
 # plt.xlim([0,150])
