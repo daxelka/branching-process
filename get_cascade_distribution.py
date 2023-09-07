@@ -7,10 +7,10 @@ from bp_mt_class import BranchingProcessMultiType
 from mtbp_analysis_class import MTBPAnalysis
 
 probability = 0.095
-n_simulations = int(5e05)
+n_simulations = int(1e05)
 
 # read simulation results
-file_name = 'data/sim_results/p_' + str(probability) + '_n_sim_' + str(n_simulations) + '_results_cor.csv'
+file_name = 'data/sim_results/p_' + str(probability) + '_n_sim_' + str(n_simulations) + '_results.csv'
 sim_results = pd.read_csv(file_name)
 
 # calculate cascades distribution
@@ -20,5 +20,5 @@ cascades = analysis.cascade_distribution(sim_results)
 print('cascades calculated, elapsed time: ' + str(time.time()-t_start))
 
 # write to file
-cascades.to_csv('data/cascades/p_' + str(probability) + '_n_sim_' + str(n_simulations) + '_cascades_cor.csv')
+cascades.to_csv('data/cascades/numerical/p_' + str(probability) + '_n_sim_' + str(n_simulations) + '_cascades.csv')
 print('saved to a file')

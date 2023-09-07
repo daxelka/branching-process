@@ -65,7 +65,7 @@ for count, prob in enumerate(probabilities_infection):
     plt.scatter(cascades_num.index + 1, cascades_num['cascades_both'], s=2, label='p: '+str(round(prob/0.1, 2))+' p*')
     plt.plot(cascades_pgf.cascades, cascades_pgf.prob)
 
-plt.plot(x_array, fitted_line, color='red')
+plt.plot(x_array, fitted_line, color='black', linewidth=3)
 plt.yscale('log')
 plt.xscale('log')
 plt.ylim([1e-6,1])
