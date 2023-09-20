@@ -77,6 +77,25 @@ class PGFAnalysis:
         ans = self.gic_1(s1, s2)  # apply initial conditions
         return ans
 
+    def hazard_pgf_com1(self, t, lin, lout, pin):
+        if t > 0:
+            h = (self.G_N_t(0, 1, t, lin, lout, pin) - self.G_N_t(0, 0, t - 1, lin, lout, pin)) / (
+                        1 - self.G_N_t(0, 0, t - 1, lin, lout, pin))
+            # print('G_N_t(0,1,t): ', G_N_t(0,1,t,lin,lout,pin), 'G_N_t(0,1,t-1): ', G_N_t(0,1,t-1,lin,lout,pin), 'G_N_t(0,0,t-1): ', G_N_t(0,0,t-1,lin,lout,pin))
+            # print('h:', h)
+            return h
+        else:
+            return 0
+
+    def hazard_pgf_com2(self, t, lin, lout, pin):
+        if t > 0:
+            h = (self.G_N_t(1, 0, t, lin, lout, pin) - self.G_N_t(0, 0, t - 1, lin, lout, pin)) / (
+                        1 - self.G_N_t(0, 0, t - 1, lin, lout, pin))
+            # print('G_N_t(0,1,t): ', G_N_t(0,1,t,lin,lout,pin), 'G_N_t(0,1,t-1): ', G_N_t(0,1,t-1,lin,lout,pin), 'G_N_t(0,0,t-1): ', G_N_t(0,0,t-1,lin,lout,pin))
+            # print('h:', h)
+            return h
+        else:
+            return 0
 
     def G_Y_t(self, s1, s2, t, lin=8, lout=2, pin=0.05):
         """
@@ -142,22 +161,88 @@ class PGFAnalysis:
             probs_both, probs_1, probs_2 = 0, 0, 0
         return probs_both, probs_1, probs_2
 
-    def hazard_pgf_com1(self, t, lin, lout, pin):
-        if t > 0:
-            h = (self.G_N_t(0, 1, t, lin, lout, pin) - self.G_N_t(0, 0, t - 1, lin, lout, pin)) / (
-                        1 - self.G_N_t(0, 0, t - 1, lin, lout, pin))
-            # print('G_N_t(0,1,t): ', G_N_t(0,1,t,lin,lout,pin), 'G_N_t(0,1,t-1): ', G_N_t(0,1,t-1,lin,lout,pin), 'G_N_t(0,0,t-1): ', G_N_t(0,0,t-1,lin,lout,pin))
-            # print('h:', h)
-            return h
+    def G_Y1_t(self, s1, s2, t, lin=8, lout=2, pin=0.05):
+        if t >= 0:
+            # create pgf for G_Y1_t by subtracting G_N_t_num and normalising it
+            ans = (self.G_N_t(s1, s2, t, lin, lout, pin) - self.G_N_t(0, s2, t, lin, lout, pin)) / \
+                  (1 - self.G_N_t(0, 1, t, lin, lout, pin))
         else:
-            return 0
+            ans = 0
+        return ans
 
-    def hazard_pgf_com2(self, t, lin, lout, pin):
-        if t > 0:
-            h = (self.G_N_t(1, 0, t, lin, lout, pin) - self.G_N_t(0, 0, t - 1, lin, lout, pin)) / (
-                        1 - self.G_N_t(0, 0, t - 1, lin, lout, pin))
-            # print('G_N_t(0,1,t): ', G_N_t(0,1,t,lin,lout,pin), 'G_N_t(0,1,t-1): ', G_N_t(0,1,t-1,lin,lout,pin), 'G_N_t(0,0,t-1): ', G_N_t(0,0,t-1,lin,lout,pin))
-            # print('h:', h)
-            return h
+    def G_Y2_t(self, s1, s2, t, lin=8, lout=2, pin=0.05):
+        if t >= 0:
+            # create pgf for G_Y1_t by subtracting G_N_t_num and normalising it
+            ans = (self.G_N_t(s1, s2, t, lin, lout, pin) - self.G_N_t(s1, 0, t, lin, lout, pin))/\
+                  (1 - self.G_N_t(1, 0, t, lin, lout, pin))
+
         else:
-            return 0
+            ans = 0
+        return ans
+
+    def G_H1_t(self, s1, s2, t, lin=8, lout=2, pin=0.05):
+        # Probability that process dies stops at exactly time t in community one, in the other
+        # community it can keep going P(N1(t)=0 | N1(t-1) >0)
+        if t > 0:
+            probs = self.G_Y1_t(self.g_X_1(s1, s2, lin, lout, pin),
+                                self.g_X_2(s1, s2, lin, lout, pin),
+                                t-1, lin, lout, pin)
+        else:
+            probs = np.nan
+        return probs
+
+    def G_H2_t(self, s1, s2, t, lin=8, lout=2, pin=0.05):
+        # Probability that process dies stops at exactly time t in community one, in the other
+        # community it can keep going P(N2(t)=0 | N2(t-1) >0)
+        if t > 0:
+            probs = self.G_Y2_t(self.g_X_1(s1, s2, lin, lout, pin),
+                                self.g_X_2(s1, s2, lin, lout, pin),
+                                t-1, lin, lout, pin)
+        else:
+            probs = np.nan
+        return probs
+
+    def reinfection_prob_com1_single_run(self, t, lin=8, lout=2, pin=0.05):
+        # continuous extinction in community 1
+        if t > 1:
+            # community 1
+            q1_t_m1 = self.G_N_t(0, 1, t-1, lin, lout, pin)
+            q1 = self.G_N_t(0, 1, t, lin, lout, pin)
+            h1_not_hazard = self.G_H1_t(0, 1, t, lin, lout, pin)
+            c1 = (q1 - h1_not_hazard*(1 - q1_t_m1))/q1_t_m1
+            r1 = 1 - c1
+        if t == 0:
+            r1 = 0
+        if t == 1:
+            r1 = 0
+        return r1
+
+    def reinfection_prob_com2_single_run(self, t, lin=8, lout=2, pin=0.05):
+        # continuous extinction in community 2
+        if t > 1:
+            q2_t_m2 = self.G_N_t(1, 0, t-1, lin, lout, pin)
+            q2 = self.G_N_t(1, 0, t, lin, lout, pin)
+            h2_not_hazard = self.G_H2_t(1, 0, t, lin, lout, pin)
+            c2 = (q2 - h2_not_hazard*(1 - q2_t_m2))/q2_t_m2
+            r2 = 1 - c2
+
+        if t == 0:
+            r2 = 0
+
+        if t == 1:
+            r2 = 1 - self.G_N_t(1, 0, t, lin, lout, pin)
+        return r2
+
+    def reinfection_prob(self, t, lin=8, lout=2, pin=0.05):
+        if isinstance(t, int):
+            r1 = self.reinfection_prob_com1_single_run(t, lin, lout, pin)
+            r2 = self.reinfection_prob_com2_single_run(t, lin, lout, pin)
+        if isinstance(t, list):
+            r1 = []
+            r2 = []
+            for t_step in t:
+                r1_i = self.reinfection_prob_com1_single_run(t_step, lin, lout, pin)
+                r2_i = self.reinfection_prob_com2_single_run(t_step, lin, lout, pin)
+                r1.append(r1_i)
+                r2.append(r2_i)
+        return r1, r2
