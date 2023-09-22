@@ -189,7 +189,7 @@ class MTBPAnalysis:
                                               'probs': list(max_generation_bp.values)})
         return lifetime_distribution
 
-    def reinfection_probability(self, sim_results, column_name='new_infections_1'):
+    def continuous_extinction_prob(self, sim_results, column_name='new_infections_1'):
         max_generation = max(sim_results.generation)
         probs = []  # enforce value for the generation 0
         for gen in range(1, max_generation + 1):
@@ -208,3 +208,36 @@ class MTBPAnalysis:
             probs.append(prob)
         return pd.DataFrame({'gens': list(range(1, max_generation + 1)),
                              'probs': probs})
+
+    def reinfection_prob(self, sim_results, column_name='new_infections_1'):
+        continuous_ext = self.continuous_extinction_prob(sim_results, column_name)
+        df = continuous_ext[['gens']].copy()
+        df['probs'] = 1 - continuous_ext['probs']
+        return df
+
+    # def continuous_extinction_prob(self, sim_results, column_name = 'new_infections_1'):
+    #     max_generation = max(sim_results.generation)
+    #     probs = []  # enforce value for the generation 0
+    #     for gen in range(1, max_generation + 1):
+    #         # survived until that gen and had zero in gen-1
+    #         sample1 = sim_results[
+    #             (sim_results['generation'] == gen) & (sim_results[column_name].shift() == 0)]
+    #         # survived until gen-1 and have zero offspring in gen-1
+    #         count_zeros_generation_minus_1 = sim_results[
+    #             (sim_results['generation'] == gen - 1) & (sim_results[column_name] == 0)]
+
+
+    # def calculate_lifetime_distribution(df, offspring_type):
+    #     # Filter the DataFrame to include only the desired offspring type
+    #     offspring_df = df[df['offspring_type-' + str(offspring_type)] > 0]
+    #
+    #     # Group the data by the 'generation' and aggregate the sum of the offspring type
+    #     grouped_df = offspring_df.groupby('generation')['offspring_type-' + str(offspring_type)].sum()
+    #
+    #     # Calculate the cumulative sum of the offspring type
+    #     cumulative_sum = np.cumsum(grouped_df)
+    #
+    #     # Calculate the lifetime distribution
+    #     lifetime_distribution = cumulative_sum / cumulative_sum.max()
+    #
+    #     return lifetime_distribution

@@ -162,13 +162,40 @@ class PGFAnalysis:
         else:
             return 0
 
-    def reinfection_probability(self, t, lin, lout, pin):
-        h1_t = self.hazard_pgf_com1(t, lin, lout, pin)
+    def G_H1_t(self, t, lin=8, lout=2, pin=0.05):
+        """
+        pgf for P[N_1(t)=0 | N_1(t-1)>0]
+        :param t:
+        :param lin:
+        :param lout:
+        :param pin:
+        :return:
+        """
+        prob = (self.G_N_t(self.g_X_1(0, 1, lin, lout, pin), self.g_X_2(0, 1, lin, lout, pin), t, lin, lout, pin) \
+               - self.G_N_t(0, self.g_X_2(0, 1, lin, lout, pin), t, lin, lout, pin))/ \
+               (1 - self.G_N_t(0, 1, t, lin, lout, pin))
+        return prob
+
+    def continuous_extinction(self, t, lin=8, lout=2, pin=0.05):
+        G_H1_t = self.G_H1_t(t, lin, lout, pin)
         q1_t = self.G_N_t(0, 1, t, lin, lout, pin)
-        q1_tm1 = self.G_N_t(0, 1, t-1, lin, lout, pin)
+        q1_tm1 = self.G_N_t(0, 1, t - 1, lin, lout, pin)
 
         if q1_tm1 > 0:
-            prob = (q1_t - h1_t * (1 - q1_tm1))/q1_tm1
+            prob = (q1_t - G_H1_t * (1 - q1_tm1)) / q1_tm1
         else:
             prob = np.nan
         return prob
+
+    # def reinfection_probability(self, t, lin, lout, pin):
+    #     h1_t = self.hazard_pgf_com1(t, lin, lout, pin)
+    #     q1_t = self.G_N_t(0, 1, t, lin, lout, pin)
+    #     q1_tm1 = self.G_N_t(0, 1, t - 1, lin, lout, pin)
+    #
+    #     if q1_tm1 > 0:
+    #         prob = (q1_t - h1_t * (1 - q1_tm1)) / q1_tm1
+    #     else:
+    #         prob = np.nan
+    #     return prob
+
+    # continuous_extinction
