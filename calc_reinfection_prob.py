@@ -43,7 +43,7 @@ r2_list = []
 r2_max_list = []
 
 for l in lambda_out_list:
-    r1, r2 = analysis.reinfection_prob(list(range(10)), lambda_in, l, probability)
+    r1, r2 = analysis.reinfection(list(range(10)), lambda_in, l, probability)
     r1_list.append(r1)
     r2_list.append(r2)
     r2_max_list.append(r2[1])

@@ -202,7 +202,7 @@ class PGFAnalysis:
             probs = np.nan
         return probs
 
-    def reinfection_prob_com1_single_run(self, t, lin=8, lout=2, pin=0.05):
+    def reinfection_community1_single_run(self, t, lin=8, lout=2, pin=0.05):
         # continuous extinction in community 1
         if t > 1:
             # community 1
@@ -217,13 +217,12 @@ class PGFAnalysis:
             r1 = 0
         return r1
 
-    def reinfection_prob_com2_single_run(self, t, lin=8, lout=2, pin=0.05):
-        # continuous extinction in community 2
+    def reinfection_community2_single_run(self, t, lin=8, lout=2, pin=0.05):
         if t > 1:
-            q2_t_m2 = self.G_N_t(1, 0, t-1, lin, lout, pin)
+            q2_t_m1 = self.G_N_t(1, 0, t-1, lin, lout, pin)
             q2 = self.G_N_t(1, 0, t, lin, lout, pin)
             h2_not_hazard = self.G_H2_t(1, 0, t, lin, lout, pin)
-            c2 = (q2 - h2_not_hazard*(1 - q2_t_m2))/q2_t_m2
+            c2 = (q2 - h2_not_hazard*(1 - q2_t_m1))/q2_t_m1
             r2 = 1 - c2
 
         if t == 0:
@@ -233,16 +232,30 @@ class PGFAnalysis:
             r2 = 1 - self.G_N_t(1, 0, t, lin, lout, pin)
         return r2
 
-    def reinfection_prob(self, t, lin=8, lout=2, pin=0.05):
+    # def reinfection_community2_temp(self, t, lin=8, lout=2, pin=0.05):
+    ## produces incorrect results
+    #     if t > 1:
+    #         q2_t_m1 = self.G_N_t(1, 0, t-1, lin, lout, pin)
+    #         h2_not_hazard = self.G_H2_t(1, 0, t, lin, lout, pin)
+    #         r2 = h2_not_hazard * (1 - 2 * q2_t_m1) / q2_t_m1
+    #
+    #     if t == 0:
+    #         r2 = 0
+    #
+    #     if t == 1:
+    #         r2 = 1 - self.G_N_t(1, 0, t, lin, lout, pin)
+    #     return r2
+
+    def reinfection(self, t, lin=8, lout=2, pin=0.05):
         if isinstance(t, int):
-            r1 = self.reinfection_prob_com1_single_run(t, lin, lout, pin)
-            r2 = self.reinfection_prob_com2_single_run(t, lin, lout, pin)
+            r1 = self.reinfection_community1_single_run(t, lin, lout, pin)
+            r2 = self.reinfection_community2_single_run(t, lin, lout, pin)
         if isinstance(t, list):
             r1 = []
             r2 = []
             for t_step in t:
-                r1_i = self.reinfection_prob_com1_single_run(t_step, lin, lout, pin)
-                r2_i = self.reinfection_prob_com2_single_run(t_step, lin, lout, pin)
+                r1_i = self.reinfection_community1_single_run(t_step, lin, lout, pin)
+                r2_i = self.reinfection_community2_single_run(t_step, lin, lout, pin)
                 r1.append(r1_i)
                 r2.append(r2_i)
         return r1, r2

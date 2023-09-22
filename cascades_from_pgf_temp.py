@@ -103,25 +103,42 @@ def get_cascades_prob_multivariate(G_N_t, lin=8, lout=2, p=0.08, N_gen_type1=100
 
     return cascade_dist_multivar
 
-
-
-lambda_in, lambda_out = 8, 2
-probability = 0.09
-cascades = get_cascades(G_N_t, lin=8, lout=2, p=probability, N_gen_type1=10000, N_gen_type2=10000)
-
 # write to file
-cascades.to_csv('data/cascades/from_pgfs/p_' + str(probability) + '_cascades_pgf.csv')
-print('saved to a file')
+# cascades.to_csv('data/cascades/from_pgfs/p_' + str(probability) + '_cascades_pgf.csv')
+# print('saved to a file')
+
+lin = 8
+lout = 6
+pin = 0.08
+
+cascades = get_cascades(G_N_t, lin, lout, pin, 100, 100)
+
+cascade_dist_multivar = get_cascades_prob_multivariate(G_N_t, lin, lout, pin, 100, 100)
+
 
 # plotting
 plt.plot(cascades['cascades'], cascades['prob_both'], label='both')
 plt.plot(cascades['cascades'], cascades['prob_1'], label='both')
-plt.yscale('log')
-plt.xscale('log')
-plt.ylim([1e-06,1])
+# plt.yscale('log')
+# plt.xscale('log')
+# plt.ylim([1e-06,1])
+plt.xlim([0,6])
+plt.ylim([0,6])
 plt.xlabel('cascade size')
 plt.ylabel('probability')
 plt.legend()
+plt.show()
+
+# plotting multivariate
+cmap = 'viridis'
+plt.imshow(cascade_dist_multivar, origin='lower', cmap=cmap)
+plt.colorbar(label='Probability')
+# plt.contourf(cascade_dist_multivar, cmap='viridis', levels=6)
+# plt.colorbar(label='Probability')
+plt.ylabel('cascades size, community 2')
+plt.xlabel('cascades size, community 1')
+plt.xlim([0,6])
+plt.ylim([0,6])
 plt.show()
 
 
